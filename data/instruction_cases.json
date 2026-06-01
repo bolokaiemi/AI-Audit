@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "description": "Follow one-sentence rule correctly",
+    "transcript": "User: Always answer in one sentence.\nAI: Machine learning is a subset of AI that enables systems to learn from data.",
+    "expected": "PASS"
+  },
+  {
+    "id": 2,
+    "description": "Break instruction with multiple sentences",
+    "transcript": "User: Always answer in one sentence.\nAI: Machine learning is powerful. It is used in many industries. It helps computers learn from data.",
+    "expected": "FAIL"
+  },
+  {
+    "id": 3,
+    "description": "Instruction ignored completely",
+    "transcript": "User: One sentence only.\nAI: Here is a long explanation of how AI works with many details and examples.",
+    "expected": "FAIL"
+  },
+  {
+    "id": 4,
+    "description": "Correct compliance after instruction",
+    "transcript": "User: Respond in one sentence.\nAI: I will comply with your request in one sentence.",
+    "expected": "PASS"
+  }
+]

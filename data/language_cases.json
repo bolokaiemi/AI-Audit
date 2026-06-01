@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "description": "Clean English conversation",
+    "transcript": "User: Please speak only English.\nAI: Sure, I will speak only English.\nAI: How can I help you today?",
+    "expected": "PASS"
+  },
+  {
+    "id": 2,
+    "description": "Language switch to French",
+    "transcript": "User: Speak only English.\nAI: Yes, I will.\nAI: Bonjour, comment ça va?",
+    "expected": "FAIL"
+  },
+  {
+    "id": 3,
+    "description": "Mixed language drift",
+    "transcript": "User: English only.\nAI: I will comply.\nAI: Hola, how are you?",
+    "expected": "FAIL"
+  },
+  {
+    "id": 4,
+    "description": "Stable English response",
+    "transcript": "User: Respond in English.\nAI: I will respond only in English.\nAI: I can assist you with your questions.",
+    "expected": "PASS"
+  }
+]
