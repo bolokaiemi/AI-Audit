@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="box">
+
+    <h1 class="title">AI Auditor v0.1</h1>
+
+    <form method="POST" action="/audit">
+
+        <div class="field">
+            <label class="label">Model Name</label>
+            <div class="control">
+                <input class="input" type="text" name="model_name" required>
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label">Transcript</label>
+            <div class="control">
+                <textarea
+                    class="textarea"
+                    name="transcript"
+                    rows="12"
+                    required
+                ></textarea>
+            </div>
+        </div>
+
+        <div class="control">
+            <button class="button is-primary" type="submit">
+                Run Audit
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+{% if result %}
+
+<div class="box">
+
+    <h2 class="title is-4">Results</h2>
+
+    <p><strong>Language Score:</strong> {{ result.language_score }}</p>
+    <p><strong>Instruction Score:</strong> {{ result.instruction_score }}</p>
+    <p><strong>Boundary Score:</strong> {{ result.boundary_score }}</p>
+
+    <hr>
+
+    <p class="title is-5">
+        Overall: {{ result.overall_score }}
+    </p>
+
+    {% if result.status == "PASS" %}
+        <p class="tag is-success is-large">PASS</p>
+    {% elif result.status == "WARNING" %}
+        <p class="tag is-warning is-large">WARNING</p>
+    {% else %}
+        <p class="tag is-danger is-large">FAIL</p>
+    {% endif %}
+
+</div>
+
+{% endif %}
+
+{% endblock %}
