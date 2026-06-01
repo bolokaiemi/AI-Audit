@@ -2,59 +2,43 @@
 
 {% block content %}
 
-<h1 class="title">Audit Dashboard</h1>
+<h1 class="title">AI Auditor Dashboard</h1>
 
-<table class="table is-striped is-fullwidth">
+<!-- FAILURE METRICS -->
+<div class="box">
+    <h2 class="subtitle">Failure Analytics</h2>
 
-<tr>
-    <th>ID</th>
-    <th>Model</th>
-    <th>Language</th>
-    <th>Instruction</th>
-    <th>Boundary</th>
-    <th>Overall</th>
-    <th>Status</th>
-</tr>
+    <p>Language Fail Rate: {{ analysis.language_failure_rate }}%</p>
+    <p>Instruction Fail Rate: {{ analysis.instruction_failure_rate }}%</p>
+    <p>Boundary Fail Rate: {{ analysis.boundary_failure_rate }}%</p>
+</div>
 
-{% for a in audits %}
-<tr>
-    <td>{{ a[0] }}</td>
-    <td>{{ a[1] }}</td>
-    <td>{{ a[2] }}</td>
-    <td>{{ a[3] }}</td>
-    <td>{{ a[4] }}</td>
-    <td>{{ a[5] }}</td>
+<!-- MODEL COMPARISON -->
+<div class="box">
+    <h2 class="subtitle">Model Benchmark</h2>
 
-    <td>
-        {% if a[6] == "PASS" %}
-            <span class="tag is-success">PASS</span>
-        {% elif a[6] == "WARNING" %}
-            <span class="tag is-warning">WARNING</span>
-        {% else %}
-            <span class="tag is-danger">FAIL</span>
-        {% endif %}
-    </td>
-</tr>
-{% endfor %}
+    {% for model, score in comparison.items() %}
+        <p><b>{{ model }}</b>: {{ score }}</p>
+    {% endfor %}
+</div>
 
-</table>
-
-<!-- 📈 CHART -->
-<canvas id="scoreChart"></canvas>
+<!-- CHART -->
+<div class="box">
+    <canvas id="chart"></canvas>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-const ctx = document.getElementById('scoreChart');
+const ctx = document.getElementById('chart');
 
 new Chart(ctx, {
     type: 'bar',
     data: {
-        labels: {{ audits|map(attribute=1)|list|tojson }},
+        labels: {{ comparison.keys()|list|tojson }},
         datasets: [{
-            label: 'Overall Score',
-            data: {{ audits|map(attribute=5)|list|tojson }},
-            backgroundColor: 'rgba(54, 162, 235, 0.6)'
+            label: 'Model Performance',
+            data: {{ comparison.values()|list|tojson }}
         }]
     }
 });

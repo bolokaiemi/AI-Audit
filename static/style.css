@@ -1,0 +1,355 @@
+/* =====================================
+   AI AUDITOR PLATFORM
+   Custom Styling Layer
+   Works with Bulma CSS
+===================================== */
+
+/* ---------- GLOBAL ---------- */
+
+html,
+body {
+    min-height: 100%;
+    background: #f5f7fa;
+}
+
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ---------- NAVBAR ---------- */
+
+.navbar {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.navbar-brand .navbar-item {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+/* ---------- PAGE WRAPPER ---------- */
+
+.main-container {
+    padding-top: 25px;
+    padding-bottom: 40px;
+}
+
+/* ---------- TITLES ---------- */
+
+.title {
+    color: #2c3e50;
+}
+
+.subtitle {
+    color: #5c6b7a;
+}
+
+/* ---------- CARDS ---------- */
+
+.audit-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+
+    box-shadow:
+        0 2px 6px rgba(0,0,0,0.08);
+}
+
+.audit-card:hover {
+    box-shadow:
+        0 8px 20px rgba(0,0,0,0.12);
+}
+
+/* ---------- RESULTS ---------- */
+
+.result-box {
+    margin-top: 25px;
+}
+
+.score {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.pass {
+    color: #23d160;
+}
+
+.warning {
+    color: #ffdd57;
+}
+
+.fail {
+    color: #ff3860;
+}
+
+/* ---------- TABLES ---------- */
+
+.table {
+    background: white;
+}
+
+.table th {
+    background: #f3f4f6;
+}
+
+.table tr:hover {
+    background: #fafafa;
+}
+
+/* ---------- DASHBOARD ---------- */
+
+.dashboard-stat {
+    text-align: center;
+    padding: 20px;
+}
+
+.dashboard-number {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.dashboard-label {
+    color: #6b7280;
+}
+
+/* ---------- ANALYTICS BOX ---------- */
+
+.analytics-box {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+
+    box-shadow:
+        0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* ---------- CHART CONTAINER ---------- */
+
+.chart-box {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+
+    box-shadow:
+        0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* ---------- FORMS ---------- */
+
+.input,
+.textarea,
+.select select {
+    border-radius: 8px;
+}
+
+.textarea {
+    min-height: 180px;
+}
+
+/* ---------- BUTTONS ---------- */
+
+.button {
+    border-radius: 8px;
+}
+
+.button.is-link {
+    font-weight: 600;
+}
+
+/* ---------- COMPLAINTS ---------- */
+
+.complaint-high {
+    color: #ff3860;
+    font-weight: bold;
+}
+
+.complaint-medium {
+    color: #ffdd57;
+    font-weight: bold;
+}
+
+.complaint-low {
+    color: #23d160;
+    font-weight: bold;
+}
+
+/* ---------- REPORT PAGE ---------- */
+
+.report-panel {
+    background: white;
+    padding: 30px;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 2px 8px rgba(0,0,0,0.08);
+}
+
+.report-download {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* ---------- STATUS BADGES ---------- */
+
+.status-pass {
+    background: #23d160;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+.status-warning {
+    background: #ffdd57;
+    color: #363636;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+.status-fail {
+    background: #ff3860;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+/* ---------- FOOTER ---------- */
+
+.footer {
+    margin-top: 40px;
+    border-top: 1px solid #e5e7eb;
+    background: white;
+}
+
+/* ---------- RESPONSIVE ---------- */
+
+@media screen and (max-width: 768px) {
+
+    .dashboard-number {
+        font-size: 1.5rem;
+    }
+
+    .score {
+        font-size: 1.5rem;
+    }
+
+    .table {
+        font-size: 0.9rem;
+    }
+
+
+/* ==========================
+   AI AUDITOR CUSTOM STYLES
+   Safe with Bulma
+========================== */
+
+.compare-card {
+    text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.compare-card:hover {
+    transform: translateY(-4px);
+}
+
+.score-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.chart-container {
+    margin-top: 20px;
+}
+
+.audit-section {
+    margin-top: 20px;
+}
+
+.report-download {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.dashboard-metric {
+    text-align: center;
+}
+
+.dashboard-metric .value {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.dashboard-metric .label {
+    color: #777;
+    font-size: 0.9rem;
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
+
+
+}
+
+/* ---------- AUTHENTICATION & NAV BUTTONS ---------- */
+
+.btn-login-styled {
+    background: #485fc7;
+    color: white !important;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1.25rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-login-styled:hover {
+    background: #3e56c4;
+    box-shadow: 0 4px 12px rgba(72, 95, 199, 0.3);
+    transform: translateY(-1px);
+}
+
+.btn-logout-styled {
+    background: transparent;
+    color: #f14668 !important;
+    border: 1px solid #f14668;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 0.5rem 1.25rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-logout-styled:hover {
+    background: #f14668;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(241, 70, 104, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Glassmorphic Login Page Styling */
+.login-bg {
+    background: radial-gradient(circle at 10% 20%, rgb(87, 108, 117) 0%, rgb(37, 50, 55) 100.2%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease;
+}
+
+.login-card:hover {
+    transform: translateY(-2px);
+}

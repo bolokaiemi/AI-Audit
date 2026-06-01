@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Log In - AI Auditor</title>
+    <!-- ✅ Bulma CSS CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif !important;
+        }
+    </style>
+</head>
+
+<body class="login-bg">
+    <div class="container px-4">
+        <div class="columns is-centered">
+            <div class="column is-5-tablet is-4-desktop">
+                
+                <!-- sleek logo icon above form -->
+                <div class="has-text-centered mb-5">
+                    <span class="title is-2 has-text-white" style="font-weight: 800; letter-spacing: 1px;">
+                        ⚡ AI AUDITOR
+                    </span>
+                </div>
+
+                <div class="login-card p-6">
+                    <h2 class="title is-4 has-text-centered mb-5" style="color: #2c3e50; font-weight: 700;">Account Sign In</h2>
+
+                    {% if error %}
+                    <div class="notification is-danger is-light py-3 px-4 mb-4 is-size-7" style="border-radius: 8px; font-weight: 600;">
+                        ⚠️ {{ error }}
+                    </div>
+                    {% endif %}
+
+                    <form method="POST" action="/login?next={{ next }}">
+                        <div class="field">
+                            <label class="label">Username</label>
+                            <div class="control">
+                                <input class="input" type="text" name="username" placeholder="e.g. admin" required style="font-weight: 600;">
+                            </div>
+                        </div>
+
+                        <div class="field mt-4">
+                            <label class="label">Password</label>
+                            <div class="control">
+                                <input class="input" type="password" name="password" placeholder="••••••••" required style="font-weight: 600;">
+                            </div>
+                        </div>
+
+                        <div class="control mt-6">
+                            <button class="button btn-login-styled is-fullwidth" type="submit">
+                                Sign In
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- User credentials hint (Commented out for security; moved to README.md)
+                    <div class="mt-6 pt-5" style="border-top: 1px solid #e5e7eb;">
+                        <h4 class="is-size-7 font-weight-bold has-text-grey mb-3">🗝️ Available Testing Accounts:</h4>
+                        <div class="tags mb-1">
+                            <span class="tag is-success is-light font-weight-bold">Admin</span>
+                            <span class="tag is-white">admin / admin123</span>
+                        </div>
+                        <div class="tags">
+                            <span class="tag is-link is-light font-weight-bold">Tester</span>
+                            <span class="tag is-white">tester / tester123</span>
+                        </div>
+                    </div>
+                    -->
+                </div>
+
+                <!-- Back to home -->
+                <div class="has-text-centered mt-4">
+                    <a href="/" class="has-text-grey-light is-size-7 font-weight-bold" style="text-decoration: underline;">
+                        ← Back to homepage
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

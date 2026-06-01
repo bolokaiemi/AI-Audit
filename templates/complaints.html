@@ -1,49 +1,109 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="main-container">
+    <div class="columns mb-6">
+        <!-- SUBMIT COMPLAINT COLUMN -->
+        <div class="column is-7">
+            <div class="audit-card">
+                <h1 class="title is-4 mb-4">📥 Submit Model Complaint</h1>
+                <form method="POST">
+                    <div class="field">
+                        <label class="label">Model Name</label>
+                        <div class="control">
+                            <input class="input" name="model_name" placeholder="e.g. gpt-4, claude-3" required>
+                        </div>
+                    </div>
 
-<h1 class="title">Complaint Panel</h1>
+                    <div class="field">
+                        <label class="label">Describe Issue</label>
+                        <div class="control">
+                            <textarea class="textarea" name="issue" placeholder="Describe the failure, hallucination, or instruction-following violation..." required></textarea>
+                        </div>
+                    </div>
 
-<form method="POST">
+                    <div class="field">
+                        <label class="label">Severity Level</label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select name="severity">
+                                    <option value="LOW">LOW</option>
+                                    <option value="MEDIUM" selected>MEDIUM</option>
+                                    <option value="HIGH">HIGH</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
-<input class="input" name="model_name" placeholder="Model Name"><br><br>
+                    <div class="control mt-5">
+                        <button class="button is-danger is-fullwidth" style="font-weight: 700;">Submit Complaint</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-<textarea class="textarea" name="issue" placeholder="Describe issue"></textarea><br><br>
+        <!-- ADMIN CONTROL PANEL COLUMN -->
+        <div class="column is-5">
+            <div class="audit-card" style="border: 1px solid #ffccd5; background: #fffcfc;">
+                <h2 class="title is-4 mb-4" style="color: #c53030;">🛠️ Admin Control Panel</h2>
+                <p class="subtitle is-6 has-text-grey mb-5">Perform maintenance actions and export testing statistics.</p>
+                
+                <div class="box p-4" style="box-shadow: none; border: 1px solid #e5e7eb;">
+                    <p class="is-size-6 mb-3"><strong>Backup & Exports</strong></p>
+                    <p class="is-size-7 has-text-grey mb-4">Bundle all generated evaluation PDF files from the disk into a dynamically generated ZIP archive.</p>
+                    <a href="/admin/download-all" class="button is-link is-fullwidth" style="font-weight: 700;">
+                        📦 Download All Reports (ZIP)
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div class="select">
-    <select name="severity">
-        <option>LOW</option>
-        <option>MEDIUM</option>
-        <option>HIGH</option>
-    </select>
+    <!-- COMPLAINTS LOG TABLE -->
+    <div class="audit-card">
+        <h2 class="title is-4 mb-4">📜 Logged Model Complaints</h2>
+        <div class="table-container">
+            <table class="table is-fullwidth is-striped is-hoverable">
+                <thead>
+                    <tr>
+                        <th class="has-text-grey-dark">Model</th>
+                        <th class="has-text-grey-dark">Issue / Description</th>
+                        <th class="has-text-centered has-text-grey-dark">Severity</th>
+                        <th class="has-text-right has-text-grey-dark">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in complaints %}
+                    <tr>
+                        <td class="is-vcentered" style="font-weight: 700;">
+                            <a href="/model/{{ c[1] }}">
+                                <span class="tag is-dark" style="cursor: pointer;">{{ c[1] }} 🔗</span>
+                            </a>
+                        </td>
+                        <td class="is-vcentered">{{ c[2] }}</td>
+                        <td class="is-vcentered has-text-centered">
+                            {% if c[3] == 'HIGH' %}
+                                <span class="tag is-danger" style="font-weight: 700;">HIGH</span>
+                            {% elif c[3] == 'MEDIUM' %}
+                                <span class="tag is-warning" style="font-weight: 700; color: #363636;">MEDIUM</span>
+                            {% else %}
+                                <span class="tag is-success is-light" style="font-weight: 700;">LOW</span>
+                            {% endif %}
+                        </td>
+                        <td class="is-vcentered has-text-right">
+                            <span class="tag is-light" style="font-weight: 700;">{{ c[5] }}</span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="has-text-centered py-5 has-text-grey">
+                            No active complaints logged.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-
-<br><br>
-
-<button class="button is-danger">Submit Complaint</button>
-
-</form>
-
-<hr>
-
-<table class="table is-fullwidth">
-
-<tr>
-    <th>Model</th>
-    <th>Issue</th>
-    <th>Severity</th>
-    <th>Status</th>
-</tr>
-
-{% for c in complaints %}
-<tr>
-    <td>{{ c[1] }}</td>
-    <td>{{ c[2] }}</td>
-    <td>{{ c[3] }}</td>
-    <td>{{ c[5] }}</td>
-</tr>
-{% endfor %}
-
-</table>
-
 {% endblock %}

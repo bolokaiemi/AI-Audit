@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 DB_NAME = "audit.db"
 
@@ -35,6 +36,16 @@ def create_tables():
         severity TEXT,
         created_at TEXT,
         status TEXT DEFAULT 'OPEN'
+    )
+    """)
+
+    # USERS
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE,
+        password TEXT,
+        role TEXT
     )
     """)
 
@@ -111,3 +122,48 @@ def get_complaints():
 
     conn.close()
     return rows
+
+
+def get_audits_by_model(model_name):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("SELECT * FROM audits WHERE model_name = ? ORDER BY id DESC", (model_name,))
+    rows = cur.fetchall()
+
+    conn.close()
+    return rows
+
+
+def create_user(username, password, role="USER"):
+    conn = get_connection()
+    cur = conn.cursor()
+    hashed = generate_password_hash(password)
+    try:
+        cur.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)", (username, hashed, role))
+        conn.commit()
+    except sqlite3.IntegrityError:
+        pass
+    finally:
+        conn.close()
+
+
+def verify_user(username, password):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT username, role, password FROM users WHERE username = ?", (username,))
+    row = cur.fetchone()
+    conn.close()
+    if row and check_password_hash(row[2], password):
+        return {"username": row[0], "role": row[1]}
+    return None
+
+
+def update_user_password(username, new_password):
+    conn = get_connection()
+    cur = conn.cursor()
+    hashed = generate_password_hash(new_password)
+    cur.execute("UPDATE users SET password = ? WHERE username = ?", (hashed, username))
+    conn.commit()
+    conn.close()
+

@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="section">
+    <div class="container">
+
+        <h1 class="title">AI Model Comparison</h1>
+        <p class="subtitle">
+            Compare average performance scores across audited models.
+        </p>
+
+        <!-- Summary Cards -->
+        <div class="columns is-multiline">
+
+            {% for model, score in comparison.items() %}
+            <div class="column is-4">
+
+                <div class="box compare-card">
+
+                    <h2 class="title is-5">
+                        {{ model }}
+                    </h2>
+
+                    <p class="score-value">
+                        {{ score }}
+                    </p>
+
+                    {% if score >= 90 %}
+                        <span class="tag is-success">PASS</span>
+                    {% elif score >= 70 %}
+                        <span class="tag is-warning">WARNING</span>
+                    {% else %}
+                        <span class="tag is-danger">FAIL</span>
+                    {% endif %}
+
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+
+        <!-- Detailed Table -->
+        <div class="box">
+
+            <h2 class="title is-4">
+                Audit Records
+            </h2>
+
+            <table class="table is-striped is-hoverable is-fullwidth">
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Model</th>
+                        <th>Language</th>
+                        <th>Instruction</th>
+                        <th>Boundary</th>
+                        <th>Overall</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for audit in audits %}
+                    <tr>
+                        <td>{{ audit[0] }}</td>
+                        <td>{{ audit[1] }}</td>
+                        <td>{{ audit[2] }}</td>
+                        <td>{{ audit[3] }}</td>
+                        <td>{{ audit[4] }}</td>
+                        <td>{{ audit[5] }}</td>
+
+                        <td>
+
+                            {% if audit[6] == "PASS" %}
+                                <span class="tag is-success">
+                                    PASS
+                                </span>
+
+                            {% elif audit[6] == "WARNING" %}
+                                <span class="tag is-warning">
+                                    WARNING
+                                </span>
+
+                            {% else %}
+                                <span class="tag is-danger">
+                                    FAIL
+                                </span>
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <!-- Chart -->
+        <div class="box">
+
+            <h2 class="title is-4">
+                Benchmark Chart
+            </h2>
+
+            <canvas id="comparisonChart"></canvas>
+
+        </div>
+
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const ctx = document.getElementById('comparisonChart');
+
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: {{ comparison.keys()|list|tojson }},
+        datasets: [{
+            label: 'Average Score',
+            data: {{ comparison.values()|list|tojson }}
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100
+            }
+        }
+    }
+});
+</script>
+
+{% endblock %}

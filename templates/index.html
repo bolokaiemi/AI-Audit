@@ -61,6 +61,24 @@
         <p class="tag is-danger is-large">FAIL</p>
     {% endif %}
 
+    {% if report %}
+    <div class="mt-5 pt-4" style="border-top: 1px solid #e5e7eb;">
+        <a id="downloadBtn" href="/{{ report }}" class="button is-link" download>
+            <span>📥 Download Audit PDF Report</span>
+        </a>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('downloadBtn');
+            if (btn) {
+                setTimeout(() => {
+                    btn.click();
+                }, 400);
+            }
+        });
+    </script>
+    {% endif %}
+
 </div>
 
 {% endif %}

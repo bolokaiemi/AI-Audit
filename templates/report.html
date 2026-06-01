@@ -1,0 +1,12 @@
+
+{% extends "base.html" %}
+{% block content %}
+
+{% if report %}
+<div class="box">
+    <a href="/{{ report }}" class="button is-link" download>
+        Download PDF Report
+    </a>
+</div>
+{% endif %}
+ {% endblock %}
