@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="title">Complaint Panel</h1>
+
+<form method="POST">
+
+<input class="input" name="model_name" placeholder="Model Name"><br><br>
+
+<textarea class="textarea" name="issue" placeholder="Describe issue"></textarea><br><br>
+
+<div class="select">
+    <select name="severity">
+        <option>LOW</option>
+        <option>MEDIUM</option>
+        <option>HIGH</option>
+    </select>
+</div>
+
+<br><br>
+
+<button class="button is-danger">Submit Complaint</button>
+
+</form>
+
+<hr>
+
+<table class="table is-fullwidth">
+
+<tr>
+    <th>Model</th>
+    <th>Issue</th>
+    <th>Severity</th>
+    <th>Status</th>
+</tr>
+
+{% for c in complaints %}
+<tr>
+    <td>{{ c[1] }}</td>
+    <td>{{ c[2] }}</td>
+    <td>{{ c[3] }}</td>
+    <td>{{ c[5] }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}

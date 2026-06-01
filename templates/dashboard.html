@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="title">Audit Dashboard</h1>
+
+<table class="table is-striped is-fullwidth">
+
+<tr>
+    <th>ID</th>
+    <th>Model</th>
+    <th>Language</th>
+    <th>Instruction</th>
+    <th>Boundary</th>
+    <th>Overall</th>
+    <th>Status</th>
+</tr>
+
+{% for a in audits %}
+<tr>
+    <td>{{ a[0] }}</td>
+    <td>{{ a[1] }}</td>
+    <td>{{ a[2] }}</td>
+    <td>{{ a[3] }}</td>
+    <td>{{ a[4] }}</td>
+    <td>{{ a[5] }}</td>
+
+    <td>
+        {% if a[6] == "PASS" %}
+            <span class="tag is-success">PASS</span>
+        {% elif a[6] == "WARNING" %}
+            <span class="tag is-warning">WARNING</span>
+        {% else %}
+            <span class="tag is-danger">FAIL</span>
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+
+</table>
+
+<!-- 📈 CHART -->
+<canvas id="scoreChart"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const ctx = document.getElementById('scoreChart');
+
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: {{ audits|map(attribute=1)|list|tojson }},
+        datasets: [{
+            label: 'Overall Score',
+            data: {{ audits|map(attribute=5)|list|tojson }},
+            backgroundColor: 'rgba(54, 162, 235, 0.6)'
+        }]
+    }
+});
+</script>
+
+{% endblock %}
