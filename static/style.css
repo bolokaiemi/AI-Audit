@@ -353,3 +353,343 @@ body {
 .login-card:hover {
     transform: translateY(-2px);
 }
+
+/* ---------- FLOATING CHAT ASSISTANT ---------- */
+
+/* Chat Floating Action Button (FAB) */
+.chat-fab-container {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 1000;
+}
+
+.chat-fab {
+    background: #485fc7;
+    color: white !important;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 1.8rem;
+    box-shadow: 0 4px 15px rgba(72, 95, 199, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.chat-fab:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 6px 20px rgba(72, 95, 199, 0.6);
+}
+
+/* Scroll Trigger Tooltip Bubble */
+.chat-tooltip {
+    position: absolute;
+    bottom: 75px;
+    right: 0;
+    background: #2c3e50;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    width: 200px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    display: none;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    line-height: 1.4;
+}
+
+.chat-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    right: 25px;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #2c3e50;
+}
+
+.chat-tooltip-visible {
+    display: block !important;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    animation: chatWobble 1s ease-in-out;
+}
+
+/* Chat Widget Panel */
+.chat-panel {
+    position: fixed;
+    bottom: 95px;
+    right: 25px;
+    width: 350px;
+    height: 480px;
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateY(30px) scale(0.95);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.chat-panel-open {
+    transform: translateY(0) scale(1) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+/* Chat Header */
+.chat-header {
+    background: #2c3e50;
+    color: white;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.chat-header-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+}
+
+.chat-status-dot {
+    width: 8px;
+    height: 8px;
+    background: #23d160;
+    border-radius: 50%;
+    margin-right: 8px;
+    display: inline-block;
+    box-shadow: 0 0 8px #23d160;
+}
+
+.chat-close-btn {
+    background: transparent;
+    border: none;
+    color: #999;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.chat-close-btn:hover {
+    color: white;
+}
+
+/* Chat Body (Messages History) */
+.chat-body {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #f7f9fc;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.chat-message {
+    padding: 10px 14px;
+    border-radius: 12px;
+    max-width: 85%;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.chat-msg-bot {
+    background: white;
+    color: #2c3e50;
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.chat-msg-user {
+    background: #485fc7;
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+    box-shadow: 0 2px 6px rgba(72, 95, 199, 0.2);
+}
+
+/* Chat Footer (Inputs) */
+.chat-footer {
+    padding: 12px;
+    background: white;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 8px;
+}
+
+.chat-input {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.chat-input:focus {
+    border-color: #485fc7;
+}
+
+.chat-send-btn {
+    background: #485fc7;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.chat-send-btn:hover {
+    background: #3e56c4;
+}
+
+/* Wobble keyframe */
+@keyframes chatWobble {
+    0%, 100% { transform: translateY(0); }
+    15% { transform: translateY(-6px) rotate(-3deg); }
+    30% { transform: translateY(3px) rotate(2deg); }
+    45% { transform: translateY(-4px) rotate(-2deg); }
+    60% { transform: translateY(2px) rotate(1deg); }
+    75% { transform: translateY(-1px) rotate(-1deg); }
+}
+
+/* Responsive adjustment */
+@media screen and (max-width: 480px) {
+    .chat-panel {
+        width: calc(100% - 40px);
+        right: 20px;
+        left: 20px;
+        bottom: 85px;
+    }
+}
+
+/* ---------- VOICE NOTE & LANG SELECTOR STYLES ---------- */
+
+/* Microphone FAB Button */
+.chat-mic-btn {
+    background: transparent;
+    color: #485fc7;
+    border: 1px solid #e5e7eb;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+}
+
+.chat-mic-btn:hover {
+    background: #f4f6fc;
+    color: #3e56c4;
+    border-color: #3e56c4;
+    transform: scale(1.05);
+}
+
+/* Pulsing Active Mic State */
+.chat-mic-active {
+    background: #ff3860 !important;
+    color: white !important;
+    border-color: #ff3860 !important;
+    animation: micPulse 1.2s infinite ease-in-out;
+}
+
+/* Header Language Dropdown */
+.chat-lang-select {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    padding: 3px 6px;
+    outline: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.chat-lang-select option {
+    background: #2c3e50;
+    color: white;
+}
+
+.chat-lang-select:focus {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* Listening Pulse Effect Keyframe */
+@keyframes micPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 56, 96, 0.5);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 56, 96, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 56, 96, 0);
+    }
+}
+
+/* ---------- CHAT ASSISTANT INTERACTIVE SUGGESTIONS ---------- */
+
+.chat-suggestions-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 6px 0 12px 0;
+    align-self: flex-start;
+    width: 100%;
+}
+
+.chat-suggestion-chip {
+    background: #eef2f7;
+    color: #485fc7 !important;
+    border: 1px solid #dcdfe6;
+    border-radius: 12px;
+    padding: 5px 10px;
+    font-size: 0.72rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+    outline: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.chat-suggestion-chip:hover {
+    background: #485fc7;
+    color: white !important;
+    border-color: #485fc7;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(72, 95, 199, 0.25);
+}
+
+.chat-suggestion-chip:active {
+    transform: translateY(0);
+}

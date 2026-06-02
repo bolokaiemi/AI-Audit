@@ -55,6 +55,16 @@
                         📦 Download All Reports (ZIP)
                     </a>
                 </div>
+
+                <div class="box p-4 mt-4" style="box-shadow: none; border: 1px solid #ffccd5; background: #fffdfd;">
+                    <p class="is-size-6 mb-3" style="color: #c53030;"><strong>Reset Platform Data</strong></p>
+                    <p class="is-size-7 has-text-grey mb-4">Purge all logs (audits and complaints) from the database and delete all generated PDF reports to start fresh.</p>
+                    <form method="POST" action="/admin/reset" onsubmit="return confirm('Are you absolutely sure you want to purge all audits logs, complaints logs, and delete all PDF files? This action is permanent.');">
+                        <button type="submit" class="button is-danger is-outlined is-fullwidth" style="font-weight: 700;">
+                            🗑️ Reset Database & Reports
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

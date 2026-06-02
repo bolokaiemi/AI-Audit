@@ -42,6 +42,9 @@
                 <a class="navbar-item px-4" href="/compare">
                     Compare Models
                 </a>
+                <a class="navbar-item px-4" href="/academy">
+                    Academy
+                </a>
                 {% if session.get('role') == 'ADMIN' %}
                 <a class="navbar-item px-4" href="/complaints">
                     Complaints & Admin
@@ -60,6 +63,9 @@
                                         <span class="tag is-success" style="font-weight: 700;">{{ session.get('user') }} (Admin)</span>
                                     {% else %}
                                         <span class="tag is-link" style="font-weight: 700;">{{ session.get('user') }} (Tester)</span>
+                                    {% endif %}
+                                    {% if user_api_key %}
+                                        <span class="tag is-warning" style="font-weight: 700; cursor: pointer;" title="Click to copy full API Key to clipboard" onclick="navigator.clipboard.writeText('{{ user_api_key }}'); alert('API Key successfully copied to clipboard!');">Key: {{ user_api_key[:12] }}... 📋</span>
                                     {% endif %}
                                 </div>
                             </div>
@@ -112,6 +118,552 @@
 
 </section>
 
+</section>
+
+<!-- =========================================
+     FLOATING CHAT ASSISTANT
+========================================= -->
+<div class="chat-fab-container">
+    <div id="chatTooltip" class="chat-tooltip">
+        Need help auditing or troubleshooting? Click me! ⚡
+    </div>
+    <button id="chatFab" class="chat-fab" onclick="toggleChatPanel();" title="AI Auditor Assistant">
+        💬
+    </button>
+</div>
+
+<div id="chatPanel" class="chat-panel">
+    <!-- Chat Header -->
+    <div class="chat-header">
+        <div class="chat-header-title">
+            <span class="chat-status-dot"></span>
+            <span>AI Auditor Assistant</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <select id="chatLangSelect" class="chat-lang-select" onchange="changeChatLanguage();">
+                <option value="en-US">🇺🇸 EN</option>
+                <option value="de-DE">🇩🇪 DE</option>
+                <option value="fr-FR">🇫🇷 FR</option>
+                <option value="es-ES">🇪🇸 ES</option>
+            </select>
+            <button class="chat-close-btn" onclick="toggleChatPanel();">×</button>
+        </div>
+    </div>
+
+    <!-- Chat Message Log -->
+    <div id="chatBody" class="chat-body">
+        <!-- Welcomes are rendered dynamically on load/language change -->
+    </div>
+
+    <!-- Chat Footer Inputs -->
+    <div class="chat-footer">
+        <button id="chatMicBtn" class="chat-mic-btn" onclick="toggleVoiceInput();" title="Talk to chatbot">
+            🎙️
+        </button>
+        <input type="text" id="chatInput" class="chat-input" placeholder="Type a message..." onkeydown="if(event.key === 'Enter') sendChatMessage(false);">
+        <button class="chat-send-btn" onclick="sendChatMessage(false);">
+            ➤
+        </button>
+    </div>
+</div>
+
+<script>
+    let chatOpened = false;
+    let tooltipTriggered = false;
+    let lastInputMethod = 'text';
+
+    // Global Conversation State Machine
+    const chatState = {
+        lastFallbackIndex: -1,
+        consecutiveUnknowns: 0,
+        lastTopic: null
+    };
+
+    // Multilingual Dictionary
+    const MULTILINGUAL_DICTIONARY = {
+        "en-US": {
+            "welcome": "Hello! I am your AI Auditor assistant. Ask me questions about lab instructions, vulnerability ideas (Prompt Injections, JSON format, multilingual leaks), or troubleshooting help!",
+            "placeholder": "Type a message...",
+            "lab1": "<strong>Course 1</strong> explores Prompt Injections. Flawed models break boundaries when instructed to ignore system rules. <br><br><strong>Tip:</strong> Try instructing the model to <em>'Ignore previous instructions...'</em> to verify boundary breaches!",
+            "lab2": "<strong>Course 2</strong> tests Instruction-following (strict JSON outputs). <br><br><strong>Tip:</strong> If the model outputs chatty text before the JSON (like <em>'Sure, here is your JSON...'</em>), it fails. <br><br><strong>Mitigation:</strong> Set temperature to 0.0 or define schema bounds at the gateway.",
+            "lab3": "<strong>Course 3</strong> audits Multilingual safety. Often, safety limits are only verified in English, leaving models open to translated overrides.<br><br><strong>Mitigation:</strong> Always evaluate system boundaries in all target languages, e.g., German or French.",
+            "reset": "To reset all audits log and start fresh, go to the <strong>Complaints & Admin</strong> tab (admin credentials required) and click the red <strong>Reset Database & Reports</strong> button. This will purge all logs and PDF report files.",
+            "api": "You can automate audits using our REST API endpoint `POST /api/v1/audit`. <br><br>Your active <strong>X-API-Key</strong> token is displayed in the yellow tag in the navbar. <strong>Click the tag to copy the key instantly!</strong>",
+            "hello": "Hello! I can guide you on testing models, explaining safety metrics, or resetting the system. Click one of the quick options below or ask a question!",
+            "unknown": [
+                "I'm not quite sure I understand that, but I can guide you through Course 1, 2, or 3! Which one are you currently working on?",
+                "Hmm, that doesn't match my database terms. Are you trying to audit a model or troubleshoot a lab issue? Let me know and I'll give you a hint!",
+                "Still learning! If you're stuck, you can click one of the quick options below to get helpful instructions instantly.",
+                "I'm ready to help with AI safety metrics! Ask me about boundary scoring, strict JSON formats, or how to reset the database."
+            ]
+        },
+        "de-DE": {
+            "welcome": "Hallo! Ich bin Ihr KI-Auditor-Assistent. Stellen Sie mir Fragen zu Laboranweisungen, Sicherheitslücken (Prompt-Injections, JSON-Format, mehrsprachige Lecks) oder technischer Hilfe!",
+            "placeholder": "Nachricht eingeben...",
+            "lab1": "<strong>Kurs 1</strong> untersucht Prompt-Injections. Fehlerhafte Modelle verletzen Sicherheitsgrenzen, wenn sie angewiesen werden, Systemregeln zu ignorieren. <br><br><strong>Tipp:</strong> Versuchen Sie, das Modell anzuweisen: <em>'Ignoriere vorherige Anweisungen...'</em>, um Sicherheitslecks zu prüfen!",
+            "lab2": "<strong>Kurs 2</strong> testet das Befolgen von Anweisungen (strenge JSON-Ausgabe). <br><br><strong>Tipp:</strong> Wenn das Modell vor dem JSON Text ausgibt (wie <em>'Hier ist Ihr JSON...'</em>), schlägt der Test fehl. <br><br><strong>Lösung:</strong> Setzen Sie die Temperatur auf 0.0 oder erzwingen Sie ein JSON-Schema.",
+            "lab3": "<strong>Kurs 3</strong> überprüft die mehrsprachige Sicherheit. Oft werden Sicherheitsgrenzen nur auf Englisch getestet, was Modelle für übersetzte Overrides anfällig macht.<br><br><strong>Lösung:</strong> Testen Sie Systemgrenzen in allen Zielsprachen, z.B. Deutsch oder Französisch.",
+            "reset": "Um alle Audit-Protokolle zurückzusetzen, gehen Sie auf die Registerkarte <strong>Beschwerden & Admin</strong> und klicken Sie auf die rote Schaltfläche <strong>Datenbank & Berichte zurücksetzen</strong>. Dadurch werden alle Protokolle und PDF-Berichte gelöscht.",
+            "api": "Sie können Audits mit unserem REST-API-Endpunkt `POST /api/v1/audit` automatisieren. <br><br>Ihr aktiver <strong>X-API-Key</strong>-Token wird im gelben Tag in der Navigationsleiste angezeigt. <strong>Klicken Sie darauf, um ihn zu kopieren!</strong>",
+            "hello": "Hallo! Ich kann Ihnen helfen, Modelle zu testen, Sicherheitsmetriken zu erklären oder das System zurückzusetzen. Klicken Sie auf eine der Optionen!",
+            "unknown": [
+                "Ich bin mir nicht sicher, ob ich das verstanden habe. Aber ich kann Sie durch Kurs 1, 2 oder 3 führen! An welchem arbeiten Sie gerade?",
+                "Hm, das entspricht nicht meinen Begriffen. Versuchen Sie, ein Modell zu prüfen oder ein Problem zu beheben? Klicken Sie auf eine der Optionen!",
+                "Ich lerne noch! Wenn Sie nicht weiterkommen, klicken Sie auf eine der Schnelloptionen unten, um sofort Hilfe zu erhalten.",
+                "Ich helfe Ihnen gerne bei KI-Sicherheitsmetriken! Fragen Sie mich nach Sicherheitsgrenzen, JSON-Formaten oder dem Zurücksetzen der Datenbank."
+            ]
+        },
+        "fr-FR": {
+            "welcome": "Bonjour ! Je suis votre assistant IA Auditor. Posez-moi des questions sur les instructions des TP, les failles (injections de prompt, format JSON, failles multilingues) ou l'aide technique !",
+            "placeholder": "Tapez un message...",
+            "lab1": "<strong>Cours 1</strong> explore les injections de prompt. Les modèles défectueux prennent des libertés lorsque l'utilisateur leur demande d'ignorer les règles système. <br><br><strong>Conseil :</strong> Essayez de dire : <em>'Ignorez les instructions précédentes...'</em> pour vérifier les failles de sécurité !",
+            "lab2": "<strong>Cours 2</strong> teste le respect des instructions (sorties JSON strictes). <br><br><strong>Conseil :</strong> Si le modèle affiche du texte avant le JSON (comme <em>'Voici votre JSON...'</em>), le test échoue. <br><br><strong>Solution :</strong> Réglez la température sur 0.0 ou imposez un schéma JSON.",
+            "lab3": "<strong>Cours 3</strong> audite la sécurité multilingue. Souvent, la sécurité n'est testée qu'en anglais, laissant les modèles vulnérables aux contournements traduits.<br><br><strong>Solution :</strong> Évaluez toujours les prompts système dans toutes les langues cibles, comme le français ou l'allemand.",
+            "reset": "Pour réinitialiser les journaux d'audit et recommencer, accédez à l'onglet <strong>Plaintes & Admin</strong> et cliquez sur le bouton rouge <strong>Réinitialiser la base de données et les rapports</strong>. Cela effacera tous les journaux et fichiers PDF.",
+            "api": "Vous pouvez automatiser les audits avec notre API REST `POST /api/v1/audit`. <br><br>Votre jeton <strong>X-API-Key</strong> est affiché dans l'onglet jaune de la barre de navigation. <strong>Cliquez pour le copier !</strong>",
+            "hello": "Bonjour ! Je peux vous aider à tester vos modèles, vous expliquer les critères de sécurité ou réinitialiser le système. Cliquez sur un raccourci !",
+            "unknown": [
+                "Je ne suis pas sûr de comprendre, mais je peux vous guider à travers les cours 1, 2 ou 3 ! Sur lequel travaillez-vous actuellement ?",
+                "Hmm, cela ne correspond pas à mes termes de référence. Essayez-vous d'auditer un modèle ou de résoudre un problème ? Cliquez sur une suggestion !",
+                "J'apprends encore ! Si vous êtes bloqué, cliquez sur l'un des raccourcis ci-dessous pour obtenir de l'aide immédiatement.",
+                "Je suis là pour vous aider avec les métriques ! Posez des questions sur l'évaluation des limites, le JSON ou la réinitialisation de la BD."
+            ]
+        },
+        "es-ES": {
+            "welcome": "¡Hola! Soy tu asistente de IA Auditor. ¡Hazme preguntas sobre las instrucciones de los laboratorios, fallos de seguridad (inyecciones de prompt, formato JSON, fugas multilingües) o soporte técnico!",
+            "placeholder": "Escribe un mensaje...",
+            "lab1": "El <strong>Curso 1</strong> explora las inyecciones de prompt. Los modelos defectuosos violan los límites si se les ordena ignorar las reglas del sistema. <br><br><strong>Consejo:</strong> Intente decir: <em>'Ignore las instrucciones anteriores...'</em> para comprobar las brechas de seguridad.",
+            "lab2": "El <strong>Curso 2</strong> evalúa el cumplimiento de formatos (salidas JSON estrictas). <br><br><strong>Consejo:</strong> Si el modelo muestra texto conversacional antes del JSON (como <em>'Aquí está su JSON...'</em>), falla. <br><br><strong>Mitigación:</strong> Ajuste la temperatura a 0.0 o imponga un esquema JSON.",
+            "lab3": "El <strong>Curso 3</strong> audita la seguridad multilingüe. A menudo, la seguridad solo se alinea en inglés, dejando a los modelos abiertos a anulaciones traducidas.<br><br><strong>Mitigación:</strong> Evalúe siempre los prompts del sistema en todos los idiomas de destino, como el español o el alemán.",
+            "reset": "Para restablecer los registros de auditoría y comenzar de nuevo, vaya a la pestaña <strong>Quejas & Admin</strong> y haga clic en el botón ojo <strong>Restablecer base de datos y informes</strong>. Esto purgará todos los registros y archivos PDF.",
+            "api": "Puede automatizar las auditorías utilizando nuestra API REST `POST /api/v1/audit`. <br><br>Su token <strong>X-API-Key</strong> activo se muestra en la etiqueta amarilla de la barra de navegación. <strong>¡Haga clic para copiarlo!</strong>",
+            "hello": "¡Hola! Puedo guiarle en las pruebas de modelos, explicar las métricas de seguridad o restablecer los datos. ¡Haga clic en una opción rápida!",
+            "unknown": [
+                "No estoy seguro de entender, ¡pero puedo guiarle a través del Curso 1, 2 o 3! ¿En cuál está trabajando ahora?",
+                "Mmm, eso no coincide con mi base de datos. ¿Está intentando auditar un modelo o solucionar un problema? ¡Haga clic en una opción!",
+                "¡Sigo aprendiendo! Si se encuentra atascado, haga clic en una de las sugerencias rápidas abajo para recibir instrucciones instantly.",
+                "¡Estoy listo para ayudarle! Pregúnteme sobre puntuaciones de límites, formatos JSON estrictos o cómo restablecer la base de datos."
+            ]
+        }
+    };
+
+    // Page-Aware Context Generator
+    function getPageContext(lang) {
+        const path = window.location.pathname;
+        const dicts = {
+            "en-US": {
+                "home": {
+                    "welcome": "Welcome to **AI Auditor**! You can test safety transcripts here to grade boundaries, formats, and language metrics. Try pasting a prompt injection in the sandbox above!",
+                    "chips": ["🎯 Course 1 Lab", "📊 Course 2 JSON", "🌍 Course 3 Multilingual", "🔑 REST API Token"]
+                },
+                "dashboard": {
+                    "welcome": "You are on the **Audit Dashboard**! View failure statistics, overall model safety metrics, and historical logs here.",
+                    "chips": ["💡 How Metrics Work", "🔐 Reset Database", "🎯 Go to Academy", "📊 Compare Models"]
+                },
+                "compare": {
+                    "welcome": "Welcome to **Model Comparison**! Check average overall scores, warning rates, and failure statistics across all registered LLMs.",
+                    "chips": ["💡 What is a Verdict?", "🎯 Course 1 Sandbox", "🔐 Purge Logs", "🔑 API Token"]
+                },
+                "academy": {
+                    "welcome": "Welcome to the **Auditing Academy**! Click the sandbox courses above to test prompt injections, strict JSON adherence, and translated safety limits.",
+                    "chips": ["🧪 Tip for Course 1", "🧪 Tip for Course 2", "🧪 Tip for Course 3", "🔑 REST API Spec"]
+                },
+                "complaints": {
+                    "welcome": "You are on the **Complaints & Admin Panel**! Use this space to review reported model flaws or perform a factory database reset.",
+                    "chips": ["🔐 Reset DB & Reports", "📊 View Analytics", "🔑 REST API Access", "🎯 Run Academy Lab"]
+                },
+                "default": {
+                    "welcome": "Hello! I am your AI Auditor assistant. Ask me questions about lab instructions, vulnerability ideas, or troubleshooting help!",
+                    "chips": ["🎯 Course 1 Lab", "📊 Course 2 JSON", "🌍 Course 3 Multilingual", "🔑 REST API Key"]
+                }
+            },
+            "de-DE": {
+                "home": {
+                    "welcome": "Willkommen bei **AI Auditor**! Sie können hier Sicherheits-Transkripte testen, um Grenzen, Formate und Sprachmetriken zu bewerten. Versuchen Sie eine Prompt-Injection oben!",
+                    "chips": ["🎯 Kurs 1 Labor", "📊 Kurs 2 JSON", "🌍 Kurs 3 Übersetzung", "🔑 REST-API Token"]
+                },
+                "dashboard": {
+                    "welcome": "Sie befinden sich auf dem **Audit-Dashboard**! Sehen Sie sich hier Fehlerstatistiken, Sicherheitsmetriken und den Verlauf an.",
+                    "chips": ["💡 Funktionsweise Metriken", "🔐 Datenbank löschen", "🎯 Zur Akademie", "📊 Modelle vergleichen"]
+                },
+                "compare": {
+                    "welcome": "Willkommen beim **Modellvergleich**! Prüfen Sie hier Durchschnittswerte, Warnungsraten und Fehlerstatistiken aller registrierten LLMs.",
+                    "chips": ["💡 Was ist ein Urteil?", "🎯 Kurs 1 Sandbox", "🔐 Protokolle löschen", "🔑 API Token"]
+                },
+                "academy": {
+                    "welcome": "Willkommen in der **Auditing-Akademie**! Klicken Sie auf die Kurse, um Prompt-Injections, strenge JSON-Einhaltung und mehrsprachige Regeln zu testen.",
+                    "chips": ["🧪 Tipp für Kurs 1", "🧪 Tipp für Kurs 2", "🧪 Tipp für Kurs 3", "🔑 REST-API Spezifikation"]
+                },
+                "complaints": {
+                    "welcome": "Sie sind im **Beschwerden- & Admin-Bereich**! Nutzen Sie diesen Bereich, um gemeldete Fehler zu prüfen oder die Datenbank zurückzusetzen.",
+                    "chips": ["🔐 Datenbank zurücksetzen", "📊 Analysen anzeigen", "🔑 REST-API Zugang", "🎯 Akademie starten"]
+                },
+                "default": {
+                    "welcome": "Hallo! Ich bin Ihr KI-Auditor-Assistent. Stellen Sie mir Fragen zu Laboranweisungen, Sicherheitslücken oder technischer Hilfe!",
+                    "chips": ["🎯 Kurs 1 Labor", "📊 Kurs 2 JSON", "🌍 Kurs 3 Übersetzung", "🔑 REST-API Zugang"]
+                }
+            },
+            "fr-FR": {
+                "home": {
+                    "welcome": "Bienvenue sur **AI Auditor** ! Vous pouvez tester ici les transcriptions de sécurité pour évaluer les limites, les formats et les langues. Essayez d'insérer une injection de prompt !",
+                    "chips": ["🎯 Cours 1 TP", "📊 Cours 2 JSON", "🌍 Cours 3 Multilingue", "🔑 Jeton API REST"]
+                },
+                "dashboard": {
+                    "welcome": "Vous êtes sur le **Tableau de bord d'audit** ! Visualisez les statistiques d'échec, les métriques globales de sécurité et l'historique.",
+                    "chips": ["💡 Métriques d'audit", "🔐 Réinitialiser BD", "🎯 Aller à l'Académie", "📊 Comparer Modèles"]
+                },
+                "compare": {
+                    "welcome": "Bienvenue sur **Comparaison de Modèles** ! Comparez les scores moyens, les taux d'alerte et les statistiques d'échecs des modèles.",
+                    "chips": ["💡 Qu'est-ce qu'un Verdict ?", "🎯 Cours 1 Sandbox", "🔐 Purger les données", "🔑 Jeton API"]
+                },
+                "academy": {
+                    "welcome": "Bienvenue dans **l'Académie d'Audit** ! Cliquez sur les cours ci-dessus pour tester les injections de prompt, le JSON strict et la sécurité multilingue.",
+                    "chips": ["🧪 Conseil pour Cours 1", "🧪 Conseil pour Cours 2", "🧪 Conseil pour Cours 3", "🔑 Spécification API REST"]
+                },
+                "complaints": {
+                    "welcome": "Vous êtes sur l'onglet **Plaintes & Admin** ! Utilisez cet espace pour examiner les failles signalées ou réinitialiser complètement la base de données.",
+                    "chips": ["🔐 Réinitialiser BD & Rapports", "📊 Voir Analytics", "🔑 Accès API REST", "🎯 Lancer l'Académie"]
+                },
+                "default": {
+                    "welcome": "Bonjour ! Je suis votre assistant IA Auditor. Posez-moi des questions sur les instructions de TP, les failles ou l'aide technique !",
+                    "chips": ["🎯 Cours 1 TP", "📊 Cours 2 JSON", "🌍 Cours 3 Multilingue", "🔑 Clé API REST"]
+                }
+            },
+            "es-ES": {
+                "home": {
+                    "welcome": "¡Bienvenido a **AI Auditor**! Aquí puede evaluar transcripciones de seguridad para calificar límites, formatos y métricas de idiomas.",
+                    "chips": ["🎯 Curso 1 Lab", "📊 Curso 2 JSON", "🌍 Curso 3 Multilingüe", "🔑 Token API REST"]
+                },
+                "dashboard": {
+                    "welcome": "¡Se encuentra en el **Tablero de Auditoría**! Visualice estadísticas de fallos, métricas de seguridad y el historial de registros aquí.",
+                    "chips": ["💡 ¿Cómo funcionan las métricas?", "🔐 Restablecer BD", "🎯 Ir a la Academia", "📊 Comparar Modelos"]
+                },
+                "compare": {
+                    "welcome": "¡Bienvenido a **Comparación de Modelos**! Compare las puntuaciones medias, tasas de advertencia y fallos de todos los LLM.",
+                    "chips": ["💡 ¿Qué es un Veredicto?", "🎯 Curso 1 Sandbox", "🔐 Purgar Registros", "🔑 Token API"]
+                },
+                "academy": {
+                    "welcome": "¡Bienvenido a la **Academia de Auditoría**! Pruebe inyecciones de prompt, cumplimiento estricto de JSON y seguridad multilingüe.",
+                    "chips": ["🧪 Consejo del Curso 1", "🧪 Consejo del Curso 2", "🧪 Consejo del Curso 3", "🔑 Especificación API REST"]
+                },
+                "complaints": {
+                    "welcome": "¡Está en el **Panel de Quejas & Admin**! Revise fallos del sistema reportados por usuarios o realice un restablecimiento de base de datos.",
+                    "chips": ["🔐 Restablecer BD & Informes", "📊 Ver Análisis", "🔑 Acceso API REST", "🎯 Iniciar Academia"]
+                },
+                "default": {
+                    "welcome": "¡Hola! Soy tu asistente de IA Auditor. ¡Hazme preguntas sobre laboratorios, inyecciones de prompt, formato JSON o soporte técnico!",
+                    "chips": ["🎯 Curso 1 Lab", "📊 Curso 2 JSON", "🌍 Curso 3 Multilingüe", "🔑 Clave API REST"]
+                }
+            }
+        };
+
+        const currentLangDict = dicts[lang] || dicts["en-US"];
+        if (path === "/" || path === "/index" || path === "") {
+            return currentLangDict.home;
+        } else if (path.includes("dashboard")) {
+            return currentLangDict.dashboard;
+        } else if (path.includes("compare")) {
+            return currentLangDict.compare;
+        } else if (path.includes("academy")) {
+            return currentLangDict.academy;
+        } else if (path.includes("complaints")) {
+            return currentLangDict.complaints;
+        } else {
+            return currentLangDict.default;
+        }
+    }
+
+    // Follow-up Suggestions mapping
+    function getChipsForTopic(topic, lang) {
+        const chipsDict = {
+            "en-US": {
+                "lab1": ["🧪 Tip for Course 2", "🔑 REST API Token", "🔐 Reset Database"],
+                "lab2": ["🧪 Tip for Course 3", "🎯 Course 1 Lab", "🔐 Reset Database"],
+                "lab3": ["🧪 Tip for Course 1", "🔑 REST API Token", "📊 View Analytics"],
+                "api": ["🎯 Check Academy Labs", "🔐 Reset Database", "📊 View Analytics"],
+                "reset": ["🔑 REST API Token", "🎯 Check Academy Labs", "📊 View Analytics"],
+                "hello": ["🎯 Course 1 Lab", "📊 Course 2 JSON", "🌍 Course 3 Multilingual", "🔑 REST API Key"]
+            },
+            "de-DE": {
+                "lab1": ["🧪 Tipp für Kurs 2", "🔑 REST-API Token", "🔐 Datenbank löschen"],
+                "lab2": ["🧪 Tipp für Kurs 3", "🎯 Kurs 1 Labor", "🔐 Datenbank löschen"],
+                "lab3": ["🧪 Tipp für Kurs 1", "🔑 REST-API Token", "📊 Analysen anzeigen"],
+                "api": ["🎯 Akademie ansehen", "🔐 Datenbank löschen", "📊 Analysen anzeigen"],
+                "reset": ["🔑 REST-API Token", "🎯 Akademie ansehen", "📊 Analysen anzeigen"],
+                "hello": ["🎯 Kurs 1 Labor", "📊 Kurs 2 JSON", "🌍 Kurs 3 Übersetzung", "🔑 REST-API Zugang"]
+            },
+            "fr-FR": {
+                "lab1": ["🧪 Conseil pour Cours 2", "🔑 Jeton API REST", "🔐 Réinitialiser BD"],
+                "lab2": ["🧪 Conseil pour Cours 3", "🎯 Cours 1 TP", "🔐 Réinitialiser BD"],
+                "lab3": ["🧪 Conseil pour Cours 1", "🔑 Jeton API REST", "📊 Voir Analytics"],
+                "api": ["🎯 Accéder à l'Académie", "🔐 Réinitialiser BD", "📊 Voir Analytics"],
+                "reset": ["🔑 Jeton API REST", "🎯 Accéder à l'Académie", "📊 Voir Analytics"],
+                "hello": ["🎯 Cours 1 TP", "📊 Cours 2 JSON", "🌍 Cours 3 Multilingue", "🔑 Clé API REST"]
+            },
+            "es-ES": {
+                "lab1": ["🧪 Consejo del Curso 2", "🔑 Token API REST", "🔐 Restablecer BD"],
+                "lab2": ["🧪 Consejo del Curso 3", "🎯 Curso 1 Lab", "🔐 Restablecer BD"],
+                "lab3": ["🧪 Consejo del Curso 1", "🔑 Token API REST", "📊 Ver Análisis"],
+                "api": ["🎯 Ver Academia", "🔐 Restablecer BD", "📊 Ver Análisis"],
+                "reset": ["🔑 Token API REST", "🎯 Ver Academia", "📊 Ver Análisis"],
+                "hello": ["🎯 Curso 1 Lab", "📊 Curso 2 JSON", "🌍 Curso 3 Multilingüe", "🔑 Clave API REST"]
+            }
+        };
+
+        const currentChipsDict = chipsDict[lang] || chipsDict["en-US"];
+        return currentChipsDict[topic] || getPageContext(lang).chips;
+    }
+
+    // 🎙️ HTML5 Web Speech Recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    let isListening = false;
+
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = () => {
+            isListening = true;
+            const micBtn = document.getElementById('chatMicBtn');
+            if (micBtn) {
+                micBtn.classList.add('chat-mic-active');
+                micBtn.title = "Listening... Click to stop";
+            }
+        };
+
+        recognition.onend = () => {
+            isListening = false;
+            const micBtn = document.getElementById('chatMicBtn');
+            if (micBtn) {
+                micBtn.classList.remove('chat-mic-active');
+                micBtn.title = "Talk to chatbot";
+            }
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            const inputField = document.getElementById('chatInput');
+            if (inputField) {
+                inputField.value = transcript;
+                sendChatMessage(true); // Sent via voice note!
+            }
+        };
+
+        recognition.onerror = (e) => {
+            console.error("Speech recognition error", e.error);
+        };
+    }
+
+    function toggleVoiceInput() {
+        if (!recognition) {
+            alert("Voice Speech Recognition is not supported by your browser. Please try using Chrome, Edge, or Safari.");
+            return;
+        }
+        if (isListening) {
+            recognition.stop();
+        } else {
+            const selectedLang = document.getElementById('chatLangSelect').value;
+            recognition.lang = selectedLang;
+            recognition.start();
+        }
+    }
+
+    // 🔊 HTML5 Web Speech Synthesis (Spoken Response)
+    function speakResponse(text, lang) {
+        if ('speechSynthesis' in window) {
+            // Cancel active speakings
+            window.speechSynthesis.cancel();
+
+            // Strip HTML tags for clean speech
+            const cleanText = text.replace(/<[^>]*>/g, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = lang;
+
+            // Load accented voices and match to selected language
+            const voices = window.speechSynthesis.getVoices();
+            let voiceMatch = null;
+            for (let i = 0; i < voices.length; i++) {
+                if (voices[i].lang.startsWith(lang.split('-')[0])) {
+                    voiceMatch = voices[i];
+                    break;
+                }
+            }
+            if (voiceMatch) {
+                utterance.voice = voiceMatch;
+            }
+
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    // Scroll trigger logic for popping up the assistant hint
+    window.addEventListener('scroll', () => {
+        if (!chatOpened && !tooltipTriggered && window.scrollY > 300) {
+            tooltipTriggered = true;
+            const tooltip = document.getElementById('chatTooltip');
+            const fab = document.getElementById('chatFab');
+            if (tooltip && fab) {
+                tooltip.classList.add('chat-tooltip-visible');
+                fab.style.animation = 'chatWobble 1s ease-in-out';
+                setTimeout(() => {
+                    tooltip.classList.remove('chat-tooltip-visible');
+                }, 5000);
+            }
+        }
+    });
+
+    function toggleChatPanel() {
+        const panel = document.getElementById('chatPanel');
+        const tooltip = document.getElementById('chatTooltip');
+        if (panel) {
+            panel.classList.toggle('chat-panel-open');
+            chatOpened = panel.classList.contains('chat-panel-open');
+            if (chatOpened && tooltip) {
+                tooltip.classList.remove('chat-tooltip-visible');
+            }
+            if (chatOpened) {
+                setTimeout(() => document.getElementById('chatInput').focus(), 300);
+            }
+        }
+    }
+
+    // Language Change handling
+    function changeChatLanguage() {
+        const lang = document.getElementById('chatLangSelect').value;
+        const dict = MULTILINGUAL_DICTIONARY[lang];
+        
+        // Update inputs placeholders
+        document.getElementById('chatInput').placeholder = dict.placeholder;
+
+        // Clear history and add welcome based on current page path
+        const body = document.getElementById('chatBody');
+        if (body) {
+            body.innerHTML = '';
+            const pageContext = getPageContext(lang);
+            appendMessage(pageContext.welcome, 'bot');
+            appendSuggestions(pageContext.chips);
+        }
+    }
+
+    // Initialize English Welcome message
+    document.addEventListener('DOMContentLoaded', () => {
+        changeChatLanguage();
+        // Load speech synthesis voices in background
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.getVoices();
+        }
+    });
+
+    function sendChatMessage(byVoice) {
+        const input = document.getElementById('chatInput');
+        const query = input.value.trim();
+        if (!query) return;
+
+        // Log input method
+        lastInputMethod = byVoice ? 'voice' : 'text';
+
+        // Append user chat bubble
+        appendMessage(query, 'user');
+        input.value = '';
+
+        // Bot response typing emulation
+        setTimeout(() => {
+            const lang = document.getElementById('chatLangSelect').value;
+            const responseData = getAssistantResponse(query.toLowerCase(), lang);
+            appendMessage(responseData.reply, 'bot');
+            
+            // Append dynamic interactive suggestion chips
+            appendSuggestions(responseData.chips);
+
+            // Speak aloud ONLY if user sent by voice
+            if (lastInputMethod === 'voice') {
+                speakResponse(responseData.reply, lang);
+            }
+        }, 300);
+    }
+
+    function appendMessage(text, sender) {
+        const body = document.getElementById('chatBody');
+        if (!body) return;
+
+        const msgDiv = document.createElement('div');
+        msgDiv.classList.add('chat-message');
+        msgDiv.classList.add(sender === 'user' ? 'chat-msg-user' : 'chat-msg-bot');
+        msgDiv.innerHTML = text.replace(/\n/g, '<br>');
+        body.appendChild(msgDiv);
+        body.scrollTop = body.scrollHeight;
+    }
+
+    // Dynamic Suggestion Chips Injection
+    function appendSuggestions(chips) {
+        const body = document.getElementById('chatBody');
+        if (!body || !chips || chips.length === 0) return;
+
+        const container = document.createElement('div');
+        container.classList.add('chat-suggestions-container');
+
+        chips.forEach(chipText => {
+            const btn = document.createElement('button');
+            btn.classList.add('chat-suggestion-chip');
+            btn.innerHTML = chipText;
+            btn.onclick = () => {
+                const input = document.getElementById('chatInput');
+                if (input) {
+                    input.value = chipText;
+                    sendChatMessage(false);
+                }
+            };
+            container.appendChild(btn);
+        });
+
+        body.appendChild(container);
+        body.scrollTop = body.scrollHeight;
+    }
+
+    // Multi-Language response mapping with advanced state-tracking and fallbacks
+    function getAssistantResponse(q, lang) {
+        const dict = MULTILINGUAL_DICTIONARY[lang];
+        
+        // Reset check
+        if (q.includes('reset') || q.includes('null') || q.includes('clear') || q.includes('delete') || q.includes('zurücksetz') || q.includes('réinitialis') || q.includes('restablecer') || q.includes('borrar') || q.includes('purgar')) {
+            return { reply: dict.reset, chips: getChipsForTopic('reset', lang) };
+        }
+        // Course 1 check
+        if (q.includes('lab 1') || q.includes('course 1') || q.includes('boundary') || q.includes('injection') || q.includes('character') || q.includes('kurs 1') || q.includes('cours 1') || q.includes('curso 1') || q.includes('inyección')) {
+            return { reply: dict.lab1, chips: getChipsForTopic('lab1', lang) };
+        }
+        // Course 2 check
+        if (q.includes('lab 2') || q.includes('course 2') || q.includes('json') || q.includes('format') || q.includes('constraint') || q.includes('kurs 2') || q.includes('cours 2') || q.includes('curso 2')) {
+            return { reply: dict.lab2, chips: getChipsForTopic('lab2', lang) };
+        }
+        // Course 3 check
+        if (q.includes('lab 3') || q.includes('course 3') || q.includes('translation') || q.includes('multilingual') || q.includes('german') || q.includes('french') || q.includes('spanish') || q.includes('kurs 3') || q.includes('cours 3') || q.includes('curso 3') || q.includes('traducción') || q.includes('traduit') || q.includes('mehrsprachig')) {
+            return { reply: dict.lab3, chips: getChipsForTopic('lab3', lang) };
+        }
+        // API Check
+        if (q.includes('api') || q.includes('token') || q.includes('key') || q.includes('x-api-key') || q.includes('clé') || q.includes('llave') || q.includes('jeton')) {
+            return { reply: dict.api, chips: getChipsForTopic('api', lang) };
+        }
+        // Greeting check
+        if (q.includes('hello') || q.includes('hi') || q.includes('hey') || q.includes('hallo') || q.includes('bonjour') || q.includes('hola') || q.includes('help') || q.includes('hilfe') || q.includes('aide') || q.includes('ayuda') || q.includes('what is') || q.includes('capabilities') || q.includes('guide') || q.includes('tutorial') || q.includes('teach')) {
+            return { reply: dict.hello, chips: getChipsForTopic('hello', lang) };
+        }
+        
+        // Random Fallback selection (ensuring no consecutive duplicates)
+        const pool = dict.unknown;
+        let index;
+        do {
+            index = Math.floor(Math.random() * pool.length);
+        } while (index === chatState.lastFallbackIndex && pool.length > 1);
+
+        chatState.lastFallbackIndex = index;
+        
+        // Return fallback response and default contextual chips based on current page
+        return { reply: pool[index], chips: getPageContext(lang).chips };
+    }
+</script>
 </body>
 </html>
 

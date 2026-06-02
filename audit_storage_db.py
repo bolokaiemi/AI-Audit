@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+import secrets
 
 DB_NAME = "audit.db"
 
@@ -45,9 +46,23 @@ def create_tables():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE,
         password TEXT,
-        role TEXT
+        role TEXT,
+        api_key TEXT
     )
     """)
+
+    # Ensure api_key column exists (migration helper)
+    try:
+        cur.execute("ALTER TABLE users ADD COLUMN api_key TEXT")
+    except sqlite3.OperationalError:
+        pass
+
+    # Backfill missing API keys
+    cur.execute("SELECT id FROM users WHERE api_key IS NULL")
+    null_users = cur.fetchall()
+    for u in null_users:
+        new_key = "audit_" + secrets.token_hex(16)
+        cur.execute("UPDATE users SET api_key = ? WHERE id = ?", (new_key, u[0]))
 
     conn.commit()
     conn.close()
@@ -139,8 +154,9 @@ def create_user(username, password, role="USER"):
     conn = get_connection()
     cur = conn.cursor()
     hashed = generate_password_hash(password)
+    api_key = "audit_" + secrets.token_hex(16)
     try:
-        cur.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)", (username, hashed, role))
+        cur.execute("INSERT INTO users (username, password, role, api_key) VALUES (?, ?, ?, ?)", (username, hashed, role, api_key))
         conn.commit()
     except sqlite3.IntegrityError:
         pass
@@ -164,6 +180,37 @@ def update_user_password(username, new_password):
     cur = conn.cursor()
     hashed = generate_password_hash(new_password)
     cur.execute("UPDATE users SET password = ? WHERE username = ?", (hashed, username))
+    conn.commit()
+    conn.close()
+
+
+def get_user_by_api_key(api_key):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT username, role FROM users WHERE api_key = ?", (api_key,))
+    row = cur.fetchone()
+    conn.close()
+    if row:
+        return {"username": row[0], "role": row[1]}
+    return None
+
+
+def get_api_key_by_username(username):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT api_key FROM users WHERE username = ?", (username,))
+    row = cur.fetchone()
+    conn.close()
+    if row:
+        return row[0]
+    return None
+
+
+def reset_database():
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM audits")
+    cur.execute("DELETE FROM complaints")
     conn.commit()
     conn.close()
 

@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="main-container">
+    <!-- TITLE BLOCK -->
+    <div class="columns is-vcentered mb-6">
+        <div class="column">
+            <h1 class="title is-2">🎓 Auditing Academy & Curriculum</h1>
+            <p class="subtitle is-5">Interact with real-world failure scenarios to learn how to patch and train safe AI language models.</p>
+        </div>
+    </div>
+
+    <!-- COURSE SELECTOR GRID -->
+    <div class="columns mb-6">
+        {% for cid, course in courses.items() %}
+        <div class="column is-4">
+            <div class="audit-card compare-card {% if selected_course_id == cid %}style-active-card{% endif %}" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <span class="tag is-link font-weight-bold mb-3">Module 0{{ cid }}</span>
+                    <h3 class="title is-5 mb-3">{{ course.title }}</h3>
+                    <p class="is-size-7 has-text-grey mb-4">{{ course.description }}</p>
+                </div>
+                
+                <form method="POST" action="/academy/run-lab">
+                    <input type="hidden" name="course_id" value="{{ cid }}">
+                    <button class="button is-link is-fullwidth is-small" style="font-weight: 700;">
+                        {% if selected_course_id == cid %}⚡ Active Lab Selected{% else %}📂 Load Lab Scenario{% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if selected_course_id %}
+    {% set active_course = courses[selected_course_id] %}
+    <!-- LAB WORKSPACE SECTION -->
+    <div class="columns">
+        <!-- SANDBOX TRANSCRIPT COLUMN -->
+        <div class="column is-6">
+            <div class="audit-card">
+                <h2 class="title is-4 mb-4">🧪 Flawed Sandbox Transcript</h2>
+                <p class="is-size-7 has-text-grey mb-3">Below is the faulty LLM chat log for <strong>{{ active_course.title }}</strong>. Run it through the auditor to diagnose safety leaks.</p>
+                
+                <div class="box p-0 mb-4" style="background: #1e1e1e; border-radius: 8px; overflow: hidden; border: 1px solid #333;">
+                    <div class="px-4 py-2" style="background: #2d2d2d; border-bottom: 1px solid #3d3d3d; display: flex; align-items: center; justify-content: space-between;">
+                        <span class="is-size-7 font-weight-bold" style="color: #bbb; font-family: monospace;">sandbox_transcript.txt</span>
+                        <span class="tag is-danger is-light font-weight-bold is-size-7">Vulnerable</span>
+                    </div>
+                    <pre class="p-4 is-size-7" style="background: transparent; color: #d4d4d4; font-family: monospace; white-space: pre-wrap; word-break: break-all; border: none; margin: 0;">{{ active_course.sandbox_transcript }}</pre>
+                </div>
+
+                <form method="POST" action="/academy/run-lab">
+                    <input type="hidden" name="course_id" value="{{ selected_course_id }}">
+                    <button class="button is-link is-fullwidth is-medium btn-login-styled" style="font-weight: 700;">
+                        ⚡ Run Interactive Lab Audit
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- LAB DIAGNOSTICS & RESOLUTION COLUMN -->
+        <div class="column is-6">
+            {% if lab_result %}
+            <div class="audit-card" style="border: 1px solid #ffccd5; background: #fffcfc;">
+                <h2 class="title is-4 mb-4" style="color: #c53030;">📋 Lab Audit Findings</h2>
+                
+                <!-- LAB SCORES BREAKDOWN -->
+                <div class="box p-4 mb-4" style="box-shadow: none; border: 1px solid #e5e7eb; background: white;">
+                    <div class="columns is-mobile is-vcentered mb-3">
+                        <div class="column is-8">
+                            <span class="title is-5" style="font-weight: 800;">Overall score:</span>
+                        </div>
+                        <div class="column is-4 has-text-right">
+                            <span class="title is-3 font-weight-bold {% if lab_result.status == 'PASS' %}pass{% elif lab_result.status == 'WARNING' %}warning{% else %}fail{% endif %}">
+                                {{ lab_result.overall_score }}%
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- PROGRESS BAR -->
+                    <progress class="progress {% if lab_result.status == 'PASS' %}is-success{% elif lab_result.status == 'WARNING' %}is-warning{% else %}is-danger{% endif %} is-medium mb-4" value="{{ lab_result.overall_score }}" max="100"></progress>
+
+                    <!-- METRICS LIST -->
+                    <div class="columns is-multiline is-mobile is-size-7">
+                        <div class="column is-4 has-text-centered">
+                            <p class="heading has-text-grey font-weight-bold">Language</p>
+                            <p class="title is-6 font-weight-bold" style="color: #2c3e50;">{{ lab_result.language_score }}</p>
+                        </div>
+                        <div class="column is-4 has-text-centered" style="border-left: 1px solid #eee; border-right: 1px solid #eee;">
+                            <p class="heading has-text-grey font-weight-bold">Instruction</p>
+                            <p class="title is-6 font-weight-bold" style="color: #2c3e50;">{{ lab_result.instruction_score }}</p>
+                        </div>
+                        <div class="column is-4 has-text-centered">
+                            <p class="heading has-text-grey font-weight-bold">Boundary</p>
+                            <p class="title is-6 font-weight-bold" style="color: #2c3e50;">{{ lab_result.boundary_score }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DIAGNOSED VULNERABILITY -->
+                <div class="message is-danger mb-4">
+                    <div class="message-header py-2" style="font-weight: 700; font-size: 0.85rem;">
+                        <span>⚠️ Target Defect: {{ lab_result.expected_failure }}</span>
+                    </div>
+                    <div class="message-body is-size-7" style="line-height: 1.5; color: #2c3e50;">
+                        {{ lab_result.lesson }}
+                    </div>
+                </div>
+
+                <!-- MITIGATION RESOLUTION -->
+                <div class="message is-success">
+                    <div class="message-header py-2" style="font-weight: 700; font-size: 0.85rem; background: #48c78e;">
+                        <span>🛠️ Recommended Mitigation Patch</span>
+                    </div>
+                    <div class="message-body is-size-7" style="line-height: 1.5; color: #2c3e50; background: #f6fdf9; border-color: #48c78e;">
+                        <strong>Patch Fix:</strong> {{ lab_result.patch }}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <!-- WAITING STATE -->
+            <div class="audit-card has-text-centered py-6" style="border: 1px dashed #ccc; background: #fafafa; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <span style="font-size: 3.5rem;">📊</span>
+                <h3 class="title is-5 mt-4" style="color: #7f8c8d;">Awaiting Lab Run</h3>
+                <p class="is-size-7 has-text-grey px-5" style="max-width: 320px;">Click the button on the left to activate the sandbox evaluation and render vulnerability mitigations.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <!-- GLOBAL AWAITING STATE -->
+    <div class="audit-card has-text-centered py-6" style="border: 1px dashed #ccc; background: #fafafa;">
+        <span style="font-size: 4rem;">🎒</span>
+        <h2 class="title is-3 mt-4" style="color: #2c3e50;">Welcome to AI Auditor Academy!</h2>
+        <p class="subtitle is-6 has-text-grey mt-2 mb-5" style="max-width: 480px; margin-left: auto; margin-right: auto;">
+            Our interactive curriculum prepares you to understand LLM vulnerabilities, analyze failing scorecards, and implement security mitigation systems.
+        </p>
+        <p class="is-size-6 font-weight-bold" style="color: #485fc7;">📂 Select one of the course modules above to start your training scenario!</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- INLINE EXTRA CSS FOR INTERACTIVE CARD ACTIVE STATUS -->
+<style>
+    .style-active-card {
+        border: 2px solid #485fc7 !important;
+        box-shadow: 0 4px 15px rgba(72, 95, 199, 0.25) !important;
+        background: #fdfdff !important;
+    }
+</style>
+{% endblock %}
