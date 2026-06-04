@@ -31,7 +31,7 @@
                 </div>
 
                 <div class="login-card p-6">
-                    <h2 class="title is-4 has-text-centered mb-5" style="color: #2c3e50; font-weight: 700;">Account Sign In</h2>
+                    <h2 class="title is-4 has-text-centered mb-5" style="color: #2c3e50; font-weight: 700;" data-i18n="login_card_title">Account Sign In</h2>
 
                     {% if error %}
                     <div class="notification is-danger is-light py-3 px-4 mb-4 is-size-7" style="border-radius: 8px; font-weight: 600;">
@@ -39,46 +39,32 @@
                     </div>
                     {% endif %}
 
-                    <form method="POST" action="/login?next={{ next }}">
+                    <form method="POST" action="/login?next={{ next }}" autocomplete="off">
                         <div class="field">
-                            <label class="label">Username</label>
+                            <label class="label" data-i18n="login_username_lbl">Username</label>
                             <div class="control">
-                                <input class="input" type="text" name="username" placeholder="e.g. admin" required style="font-weight: 600;">
+                                <input class="input" type="text" name="username" required autocomplete="off" style="font-weight: 600;">
                             </div>
                         </div>
 
                         <div class="field mt-4">
-                            <label class="label">Password</label>
+                            <label class="label" data-i18n="login_password_lbl">Password</label>
                             <div class="control">
-                                <input class="input" type="password" name="password" placeholder="••••••••" required style="font-weight: 600;">
+                                <input class="input" type="password" name="password" required autocomplete="new-password" style="font-weight: 600;">
                             </div>
                         </div>
 
                         <div class="control mt-6">
-                            <button class="button btn-login-styled is-fullwidth" type="submit">
+                            <button class="button btn-login-styled is-fullwidth" type="submit" data-i18n="login_signin_btn">
                                 Sign In
                             </button>
                         </div>
                     </form>
-
-                    <!-- User credentials hint (Commented out for security; moved to README.md)
-                    <div class="mt-6 pt-5" style="border-top: 1px solid #e5e7eb;">
-                        <h4 class="is-size-7 font-weight-bold has-text-grey mb-3">🗝️ Available Testing Accounts:</h4>
-                        <div class="tags mb-1">
-                            <span class="tag is-success is-light font-weight-bold">Admin</span>
-                            <span class="tag is-white">admin / admin123</span>
-                        </div>
-                        <div class="tags">
-                            <span class="tag is-link is-light font-weight-bold">Tester</span>
-                            <span class="tag is-white">tester / tester123</span>
-                        </div>
-                    </div>
-                    -->
                 </div>
 
                 <!-- Back to home -->
                 <div class="has-text-centered mt-4">
-                    <a href="/" class="has-text-grey-light is-size-7 font-weight-bold" style="text-decoration: underline;">
+                    <a href="/" class="has-text-grey-light is-size-7 font-weight-bold" style="text-decoration: underline;" data-i18n="login_back_home">
                         ← Back to homepage
                     </a>
                 </div>

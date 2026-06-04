@@ -40,9 +40,16 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 # Initialize DB tables
 create_tables()
 
-# Provision default roles on startup
-create_user("adminAI#", "admin123#test", "ADMIN")
-create_user("tester", "tester123", "USER")
+# Provision default roles on startup if defined in environment
+ADMIN_USERNAME = os.getenv("ADMIN_USERNAME")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
+TESTER_USERNAME = os.getenv("TESTER_USERNAME")
+TESTER_PASSWORD = os.getenv("TESTER_PASSWORD")
+
+if ADMIN_USERNAME and ADMIN_PASSWORD:
+    create_user(ADMIN_USERNAME, ADMIN_PASSWORD, "ADMIN")
+if TESTER_USERNAME and TESTER_PASSWORD:
+    create_user(TESTER_USERNAME, TESTER_PASSWORD, "USER")
 
 
 # =========================================
@@ -54,14 +61,6 @@ def inject_api_key():
         api_key = get_api_key_by_username(session['user'])
         return dict(user_api_key=api_key)
     return dict(user_api_key=None)
-
-
-# =========================
-# HOME PAGE
-# =========================
-@app.route("/")
-def index():
-    return render_template("index.html")
 
 
 # =========================
@@ -87,6 +86,15 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+
+# =========================
+# HOME PAGE
+# =========================
+@app.route("/")
+@login_required
+def index():
+    return render_template("index.html")
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if 'user' in session:
@@ -94,6 +102,10 @@ def login():
         
     error = None
     next_url = request.args.get('next') or url_for('index')
+    
+    # Avoid redirecting to POST-only endpoints which would cause a 405 Method Not Allowed error
+    if next_url and any(p in next_url for p in ['/audit', '/reset', '/run-lab']):
+        next_url = url_for('index')
     
     if request.method == "POST":
         username = request.form["username"]

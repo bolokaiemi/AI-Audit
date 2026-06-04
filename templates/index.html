@@ -4,19 +4,19 @@
 
 <div class="box">
 
-    <h1 class="title">AI Auditor v0.1</h1>
+    <h1 class="title" data-i18n="audit_title">AI Auditor v0.1</h1>
 
     <form method="POST" action="/audit">
 
         <div class="field">
-            <label class="label">Model Name</label>
+            <label class="label" data-i18n="audit_model_name_lbl">Model Name</label>
             <div class="control">
                 <input class="input" type="text" name="model_name" required>
             </div>
         </div>
 
         <div class="field">
-            <label class="label">Transcript</label>
+            <label class="label" data-i18n="audit_transcript_lbl">Transcript</label>
             <div class="control">
                 <textarea
                     class="textarea"
@@ -28,7 +28,7 @@
         </div>
 
         <div class="control">
-            <button class="button is-primary" type="submit">
+            <button class="button is-primary" type="submit" data-i18n="audit_run_btn">
                 Run Audit
             </button>
         </div>
@@ -41,16 +41,16 @@
 
 <div class="box">
 
-    <h2 class="title is-4">Results</h2>
+    <h2 class="title is-4" data-i18n="audit_results">Results</h2>
 
-    <p><strong>Language Score:</strong> {{ result.language_score }}</p>
-    <p><strong>Instruction Score:</strong> {{ result.instruction_score }}</p>
-    <p><strong>Boundary Score:</strong> {{ result.boundary_score }}</p>
+    <p><strong data-i18n="audit_lang_score">Language Score:</strong> {{ result.language_score }}</p>
+    <p><strong data-i18n="audit_inst_score">Instruction Score:</strong> {{ result.instruction_score }}</p>
+    <p><strong data-i18n="audit_bound_score">Boundary Score:</strong> {{ result.boundary_score }}</p>
 
     <hr>
 
     <p class="title is-5">
-        Overall: {{ result.overall_score }}
+        <span data-i18n="audit_overall">Overall Score:</span> {{ result.overall_score }}
     </p>
 
     {% if result.status == "PASS" %}
@@ -63,9 +63,12 @@
 
     {% if report %}
     <div class="mt-5 pt-4" style="border-top: 1px solid #e5e7eb;">
-        <a id="downloadBtn" href="/{{ report }}" class="button is-link" download>
-            <span>📥 Download Audit PDF Report</span>
+        <a id="downloadBtn" href="/{{ report }}" class="button is-link mb-3" download>
+            <span data-i18n="audit_download_btn">📥 Download Audit PDF Report</span>
         </a>
+        <p class="is-size-7 has-text-grey" style="max-width: 600px; font-weight: 500; line-height: 1.4;">
+            ℹ️ <span data-i18n="audit_download_hint">Note: The file will be saved directly into your computer's Downloads directory, or you will be prompted to choose a folder depending on your browser settings.</span>
+        </p>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {

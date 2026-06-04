@@ -32,21 +32,21 @@
 
         <div id="navMenu" class="navbar-menu">
             <div class="navbar-start">
-                <a class="navbar-item px-4" href="/">
+                <a class="navbar-item px-4" href="/" data-i18n="nav_run_audit">
                     Run Audit
                 </a>
                 {% if session.get('user') %}
-                <a class="navbar-item px-4" href="/dashboard">
+                <a class="navbar-item px-4" href="/dashboard" data-i18n="nav_dashboard">
                     Dashboard
                 </a>
-                <a class="navbar-item px-4" href="/compare">
+                <a class="navbar-item px-4" href="/compare" data-i18n="nav_compare">
                     Compare Models
                 </a>
-                <a class="navbar-item px-4" href="/academy">
+                <a class="navbar-item px-4" href="/academy" data-i18n="nav_academy">
                     Academy
                 </a>
                 {% if session.get('role') == 'ADMIN' %}
-                <a class="navbar-item px-4" href="/complaints">
+                <a class="navbar-item px-4" href="/complaints" data-i18n="nav_complaints">
                     Complaints & Admin
                 </a>
                 {% endif %}
@@ -54,15 +54,25 @@
             </div>
             <div class="navbar-end">
                 <div class="navbar-item">
+                    <div class="select is-small is-rounded is-link">
+                        <select id="navLangSelect" onchange="changeNavLanguage(this.value);" style="background-color: #363636; color: #fff; border-color: #4a4a4a; font-weight: 600; cursor: pointer;">
+                            <option value="en-US">🇺🇸 EN</option>
+                            <option value="de-DE">🇩🇪 DE</option>
+                            <option value="fr-FR">🇫🇷 FR</option>
+                            <option value="es-ES">🇪🇸 ES</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="navbar-item">
                     {% if session.get('user') %}
                         <div class="field is-grouped is-grouped-multiline is-align-items-center">
                             <div class="control">
                                 <div class="tags has-addons mb-0">
-                                    <span class="tag is-dark">Active</span>
+                                    <span class="tag is-dark" data-i18n="nav_active">Active</span>
                                     {% if session.get('role') == 'ADMIN' %}
-                                        <span class="tag is-success" style="font-weight: 700;">{{ session.get('user') }} (Admin)</span>
+                                        <span class="tag is-success" style="font-weight: 700;">{{ session.get('user') }} (<span data-i18n="nav_admin">Admin</span>)</span>
                                     {% else %}
-                                        <span class="tag is-link" style="font-weight: 700;">{{ session.get('user') }} (Tester)</span>
+                                        <span class="tag is-link" style="font-weight: 700;">{{ session.get('user') }} (<span data-i18n="nav_tester">Tester</span>)</span>
                                     {% endif %}
                                     {% if user_api_key %}
                                         <span class="tag is-warning" style="font-weight: 700; cursor: pointer;" title="Click to copy full API Key to clipboard" onclick="navigator.clipboard.writeText('{{ user_api_key }}'); alert('API Key successfully copied to clipboard!');">Key: {{ user_api_key[:12] }}... 📋</span>
@@ -70,14 +80,14 @@
                                 </div>
                             </div>
                             <div class="control">
-                                <a href="/logout" class="button btn-logout-styled">
+                                <a href="/logout" class="button btn-logout-styled" data-i18n="nav_logout">
                                     Log Out
                                 </a>
                             </div>
                         </div>
                     {% else %}
                         <div class="control">
-                            <a href="/login" class="button btn-login-styled">
+                            <a href="/login" class="button btn-login-styled" data-i18n="nav_login">
                                 Log In
                             </a>
                         </div>
@@ -663,6 +673,181 @@
         // Return fallback response and default contextual chips based on current page
         return { reply: pool[index], chips: getPageContext(lang).chips };
     }
+
+    // =========================================
+    // UI LOCALIZATION ENGINE
+    // =========================================
+    const UI_TRANSLATIONS = {
+        "en-US": {
+            "nav_run_audit": "Run Audit",
+            "nav_dashboard": "Dashboard",
+            "nav_compare": "Compare Models",
+            "nav_academy": "Academy",
+            "nav_complaints": "Complaints & Admin",
+            "nav_logout": "Log Out",
+            "nav_login": "Log In",
+            "nav_active": "Active",
+            "nav_admin": "Admin",
+            "nav_tester": "Tester",
+            "audit_title": "AI Auditor v0.1",
+            "audit_model_name_lbl": "Model Name",
+            "audit_transcript_lbl": "Transcript",
+            "audit_run_btn": "Run Audit",
+            "audit_results": "Results",
+            "audit_lang_score": "Language Score:",
+            "audit_inst_score": "Instruction Score:",
+            "audit_bound_score": "Boundary Score:",
+            "audit_overall": "Overall Score:",
+            "audit_download_btn": "📥 Download Audit PDF Report",
+            "audit_download_hint": "Note: The file will be saved directly into your computer's Downloads directory, or you will be prompted to choose a folder depending on your browser settings.",
+            "login_card_title": "Account Sign In",
+            "login_username_lbl": "Username",
+            "login_password_lbl": "Password",
+            "login_signin_btn": "Sign In",
+            "login_back_home": "← Back to homepage"
+        },
+        "de-DE": {
+            "nav_run_audit": "Audit ausführen",
+            "nav_dashboard": "Dashboard",
+            "nav_compare": "Modelle vergleichen",
+            "nav_academy": "Akademie",
+            "nav_complaints": "Beschwerden & Admin",
+            "nav_logout": "Abmelden",
+            "nav_login": "Anmelden",
+            "nav_active": "Aktiv",
+            "nav_admin": "Admin",
+            "nav_tester": "Tester",
+            "audit_title": "KI-Auditor v0.1",
+            "audit_model_name_lbl": "Modellname",
+            "audit_transcript_lbl": "Transkript",
+            "audit_run_btn": "Audit starten",
+            "audit_results": "Ergebnisse",
+            "audit_lang_score": "Sprachpunktzahl:",
+            "audit_inst_score": "Anweisungspunktzahl:",
+            "audit_bound_score": "Grenzpunktzahl:",
+            "audit_overall": "Gesamtpunktzahl:",
+            "audit_download_btn": "📥 Audit-PDF-Bericht herunterladen",
+            "audit_download_hint": "Hinweis: Die Datei wird direkt in den Downloads-Ordner Ihres Computers gespeichert oder Sie werden je nach Browsereinstellungen aufgefordert, einen Ordner auszuwählen.",
+            "login_card_title": "Konto-Anmeldung",
+            "login_username_lbl": "Benutzername",
+            "login_password_lbl": "Passwort",
+            "login_signin_btn": "Einloggen",
+            "login_back_home": "← Zurück zur Startseite"
+        },
+        "fr-FR": {
+            "nav_run_audit": "Lancer l'audit",
+            "nav_dashboard": "Tableau de bord",
+            "nav_compare": "Comparer les modèles",
+            "nav_academy": "Académie",
+            "nav_complaints": "Plaintes & Admin",
+            "nav_logout": "Se déconnecter",
+            "nav_login": "Se connecter",
+            "nav_active": "Actif",
+            "nav_admin": "Admin",
+            "nav_tester": "Testeur",
+            "audit_title": "IA Auditor v0.1",
+            "audit_model_name_lbl": "Nom du modèle",
+            "audit_transcript_lbl": "Transcription",
+            "audit_run_btn": "Lancer l'audit",
+            "audit_results": "Résultats",
+            "audit_lang_score": "Score linguistique:",
+            "audit_inst_score": "Score d'instruction:",
+            "audit_bound_score": "Score de limite:",
+            "audit_overall": "Score global:",
+            "audit_download_btn": "📥 Télécharger le rapport PDF d'audit",
+            "audit_download_hint": "Remarque : le fichier sera enregistré directement dans le dossier Téléchargements de votre ordinateur, ou vous serez invité à choisir un dossier en fonction des paramètres de votre navigateur.",
+            "login_card_title": "Connexion au compte",
+            "login_username_lbl": "Nom d'utilisateur",
+            "login_password_lbl": "Mot de passe",
+            "login_signin_btn": "Se connecter",
+            "login_back_home": "← Retour à la page d'accueil"
+        },
+        "es-ES": {
+            "nav_run_audit": "Ejecutar auditoría",
+            "nav_dashboard": "Tablero",
+            "nav_compare": "Comparar modelos",
+            "nav_academy": "Academia",
+            "nav_complaints": "Quejas & Admin",
+            "nav_logout": "Cerrar sesión",
+            "nav_login": "Iniciar sesión",
+            "nav_active": "Activo",
+            "nav_admin": "Admin",
+            "nav_tester": "Tester",
+            "audit_title": "Auditor de IA v0.1",
+            "audit_model_name_lbl": "Nombre del modelo",
+            "audit_transcript_lbl": "Transcripción",
+            "audit_run_btn": "Ejecutar auditoría",
+            "audit_results": "Resultados",
+            "audit_lang_score": "Puntuación de idioma:",
+            "audit_inst_score": "Puntuación de instrucción:",
+            "audit_bound_score": "Puntuación de límite:",
+            "audit_overall": "Puntuación general:",
+            "audit_download_btn": "📥 Descargar informe PDF de auditoría",
+            "audit_download_hint": "Nota: El archivo se guardará directamente en la carpeta Descargas de su computadora, o se le pedirá que elija una carpeta según la configuración de su navegador.",
+            "login_card_title": "Inicio de sesión de cuenta",
+            "login_username_lbl": "Nombre de usuario",
+            "login_password_lbl": "Contraseña",
+            "login_signin_btn": "Iniciar sesión",
+            "login_back_home": "← Volver a la página de inicio"
+        }
+    };
+
+    function translateUI(lang) {
+        const dict = UI_TRANSLATIONS[lang] || UI_TRANSLATIONS["en-US"];
+        document.querySelectorAll("[data-i18n]").forEach(el => {
+            const key = el.getAttribute("data-i18n");
+            if (dict[key]) {
+                if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+                    el.placeholder = dict[key];
+                } else {
+                    el.innerHTML = dict[key];
+                }
+            }
+        });
+        localStorage.setItem("selectedLang", lang);
+
+        // Sync with the navbar dropdown value
+        const navSelect = document.getElementById("navLangSelect");
+        if (navSelect && navSelect.value !== lang) {
+            navSelect.value = lang;
+        }
+
+        // Sync with the chat lang select dropdown value
+        const chatSelect = document.getElementById("chatLangSelect");
+        if (chatSelect && chatSelect.value !== lang) {
+            chatSelect.value = lang;
+            changeChatLanguage();
+        }
+    }
+
+    function changeNavLanguage(lang) {
+        translateUI(lang);
+    }
+
+    // Intercept changeChatLanguage to sync navbar and translate UI
+    const originalChangeChatLanguage = window.changeChatLanguage;
+    window.changeChatLanguage = function() {
+        const langSelect = document.getElementById('chatLangSelect');
+        if (!langSelect) return;
+        const lang = langSelect.value;
+        
+        // Call original chatbot language handling
+        if (originalChangeChatLanguage) {
+            originalChangeChatLanguage();
+        }
+        // Sync navbar and translate page
+        const navSelect = document.getElementById("navLangSelect");
+        if (navSelect && navSelect.value !== lang) {
+            navSelect.value = lang;
+            translateUI(lang);
+        }
+    };
+
+    // Run translations on DOMContentLoaded
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedLang = localStorage.getItem("selectedLang") || "en-US";
+        translateUI(savedLang);
+    });
 </script>
 </body>
 </html>
