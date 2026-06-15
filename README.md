@@ -50,6 +50,26 @@ The **Academy** tab provides interactive, pre-loaded safety sandbox environments
 
 ---
 
+## 🛒 AI Safety Marketplace & Automated Verification Loop
+
+The **Marketplace** tab offers an automated safety-verification pipeline for AI models across critical categories (Healthcare, Finance, E-commerce, Customer Support, Legal, Logistics, and CinemaBot):
+- **Safety Holding Area**: Submitted model listings enter a private holding area. The system immediately triggers safety evaluation tests on the seller's validation transcript.
+- **Auto-Verification Loop**: Models achieving an overall safety score of `>= 90%` are marked as `VERIFIED` and listed on the public marketplace. Failing models are marked as `REJECTED` and kept private.
+- **Prompt Patch Suggestions**: Rejected models display the overall safety score, failing components, and suggested AI prompt patches in the seller's console to aid remediation.
+- **Verified badges**: Public listings feature a verified safety badge linking directly to the model's downloadable PDF safety report.
+
+---
+
+## 🤖 Closed-Loop MLOps Retraining Pipeline
+
+The platform simulates a complete automated MLOps loop driven by user feedback:
+- **Complaint Threshold**: Once total logged model complaints in the database reach `10`, the MLOps pipeline triggers automatically.
+- **Fine-Tuning Dataset Compilation**: The pipeline compiles all safety failure cases and complaints into a standard JSONL dataset file (`reports/fine_tuning_dataset.jsonl`).
+- **Retraining State Indicator**: The audited model's standing badge shifts to a pulsing blue `TRAINING` tag across all analytics dashboards.
+- **One-Click Deploy**: Admins can deploy the retrained model directly from the complaints page, returning the model to a stable state.
+
+---
+
 ## 🔌 Standardized REST API Endpoint
 
 Audits can be fully automated programmatically using the secure REST API endpoint.
