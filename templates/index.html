@@ -11,7 +11,7 @@
         <div class="field">
             <label class="label" data-i18n="audit_model_name_lbl">Model Name</label>
             <div class="control">
-                <input class="input" type="text" name="model_name" required>
+                <input class="input" type="text" name="model_name" value="{{ model_name or '' }}" required>
             </div>
         </div>
 
@@ -23,7 +23,7 @@
                     name="transcript"
                     rows="12"
                     required
-                ></textarea>
+                >{{ transcript or '' }}</textarea>
             </div>
         </div>
 

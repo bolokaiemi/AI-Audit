@@ -539,6 +539,39 @@
         }
     }
 
+    function saveMessageToStorage(text, sender) {
+        try {
+            let history = JSON.parse(sessionStorage.getItem('chatHistory') || '[]');
+            history.push({ text: text, sender: sender });
+            sessionStorage.setItem('chatHistory', JSON.stringify(history));
+        } catch (e) {
+            console.error("Failed to save chat history", e);
+        }
+    }
+
+    function loadChatHistory() {
+        const body = document.getElementById('chatBody');
+        if (!body) return false;
+        try {
+            let history = JSON.parse(sessionStorage.getItem('chatHistory') || '[]');
+            if (history.length === 0) return false;
+            
+            body.innerHTML = '';
+            history.forEach(msg => {
+                const msgDiv = document.createElement('div');
+                msgDiv.classList.add('chat-message');
+                msgDiv.classList.add(msg.sender === 'user' ? 'chat-msg-user' : 'chat-msg-bot');
+                msgDiv.innerHTML = msg.text.replace(/\n/g, '<br>');
+                body.appendChild(msgDiv);
+            });
+            body.scrollTop = body.scrollHeight;
+            return true;
+        } catch (e) {
+            console.error("Failed to load chat history", e);
+            return false;
+        }
+    }
+
     // Language Change handling
     function changeChatLanguage() {
         const lang = document.getElementById('chatLangSelect').value;
@@ -547,13 +580,15 @@
         // Update inputs placeholders
         document.getElementById('chatInput').placeholder = dict.placeholder;
 
-        // Clear history and add welcome based on current page path
-        const body = document.getElementById('chatBody');
-        if (body) {
-            body.innerHTML = '';
-            const pageContext = getPageContext(lang);
-            appendMessage(pageContext.welcome, 'bot');
-            appendSuggestions(pageContext.chips);
+        // Try loading history first. If empty, load welcome message.
+        if (!loadChatHistory()) {
+            const body = document.getElementById('chatBody');
+            if (body) {
+                body.innerHTML = '';
+                const pageContext = getPageContext(lang);
+                appendMessage(pageContext.welcome, 'bot');
+                appendSuggestions(pageContext.chips);
+            }
         }
     }
 
@@ -604,6 +639,8 @@
         msgDiv.innerHTML = text.replace(/\n/g, '<br>');
         body.appendChild(msgDiv);
         body.scrollTop = body.scrollHeight;
+
+        saveMessageToStorage(text, sender);
     }
 
     // Dynamic Suggestion Chips Injection

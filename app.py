@@ -361,7 +361,9 @@ def audit():
     return render_template(
         "index.html",
         result=audit_data,
-        report=report_file
+        report=report_file,
+        model_name=model_name,
+        transcript=transcript
     )
 
 
