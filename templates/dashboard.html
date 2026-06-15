@@ -1,30 +1,116 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="main-container">
+    
+    <!-- HEADER -->
+    <div class="columns is-vcentered mb-6">
+        <div class="column">
+            <h1 class="title is-1 dashboard-gradient-title" data-i18n="dash_title">AI Auditor Dashboard</h1>
+            <p class="subtitle is-5 has-text-grey" data-i18n="dash_subtitle_desc">Real-time model failure rates, benchmarks, and performance analysis.</p>
+        </div>
+    </div>
 
-<h1 class="title" data-i18n="dash_title">AI Auditor Dashboard</h1>
+    <!-- FAILURE METRICS ROW -->
+    <div class="columns mb-6">
+        <!-- LANGUAGE FAIL RATE -->
+        <div class="column is-4">
+            <div class="fail-card fail-card-blue">
+                <p class="heading has-text-grey font-weight-bold" data-i18n="dash_lang_fail">Language Fail Rate</p>
+                <div class="is-flex is-align-items-baseline mb-3">
+                    <span class="title is-1 font-weight-bold" style="color: #1e3a8a;">{{ "%.1f"|format(analysis.language_failure_rate) }}%</span>
+                </div>
+                <div class="premium-progress-container mb-3">
+                    <div class="premium-progress-fill bg-gradient-blue" style="width: {{ analysis.language_failure_rate }}%;"></div>
+                </div>
+                <p class="is-size-7 has-text-grey" data-i18n="dash_lang_desc">Measures failure of target localization stability tests.</p>
+            </div>
+        </div>
 
-<!-- FAILURE METRICS -->
-<div class="box">
-    <h2 class="subtitle" data-i18n="dash_fail_analytics">Failure Analytics</h2>
+        <!-- INSTRUCTION FAIL RATE -->
+        <div class="column is-4">
+            <div class="fail-card fail-card-purple">
+                <p class="heading has-text-grey font-weight-bold" data-i18n="dash_inst_fail">Instruction Fail Rate</p>
+                <div class="is-flex is-align-items-baseline mb-3">
+                    <span class="title is-1 font-weight-bold" style="color: #581c87;">{{ "%.1f"|format(analysis.instruction_failure_rate) }}%</span>
+                </div>
+                <div class="premium-progress-container mb-3">
+                    <div class="premium-progress-fill bg-gradient-purple" style="width: {{ analysis.instruction_failure_rate }}%;"></div>
+                </div>
+                <p class="is-size-7 has-text-grey" data-i18n="dash_inst_desc">Measures failure in format alignment and constraint enforcement.</p>
+            </div>
+        </div>
 
-    <p><strong data-i18n="dash_lang_fail">Language Fail Rate:</strong> {{ analysis.language_failure_rate }}%</p>
-    <p><strong data-i18n="dash_inst_fail">Instruction Fail Rate:</strong> {{ analysis.instruction_failure_rate }}%</p>
-    <p><strong data-i18n="dash_bound_fail">Boundary Fail Rate:</strong> {{ analysis.boundary_failure_rate }}%</p>
-</div>
+        <!-- BOUNDARY FAIL RATE -->
+        <div class="column is-4">
+            <div class="fail-card fail-card-orange">
+                <p class="heading has-text-grey font-weight-bold" data-i18n="dash_bound_fail">Boundary Fail Rate</p>
+                <div class="is-flex is-align-items-baseline mb-3">
+                    <span class="title is-1 font-weight-bold" style="color: #78350f;">{{ "%.1f"|format(analysis.boundary_failure_rate) }}%</span>
+                </div>
+                <div class="premium-progress-container mb-3">
+                    <div class="premium-progress-fill bg-gradient-orange" style="width: {{ analysis.boundary_failure_rate }}%;"></div>
+                </div>
+                <p class="is-size-7 has-text-grey" data-i18n="dash_bound_desc">Measures vulnerability overrides and prompt injection breaches.</p>
+            </div>
+        </div>
+    </div>
 
-<!-- MODEL COMPARISON -->
-<div class="box">
-    <h2 class="subtitle" data-i18n="dash_model_benchmark">Model Benchmark</h2>
+    <!-- DOUBLE COLUMN SECTION (LEADERBOARD & CHART) -->
+    <div class="columns">
+        <!-- MODEL LEADERBOARD -->
+        <div class="column is-5">
+            <div class="leaderboard-container" style="height: 100%;">
+                <h2 class="title is-4 mb-4" data-i18n="dash_model_benchmark">🏆 Model Leaderboard</h2>
+                
+                <div class="leaderboard-list mt-5">
+                    {% set sorted_comparison = comparison.items()|sort(attribute='1', reverse=true) %}
+                    {% for model, score in sorted_comparison %}
+                    <div class="leaderboard-row">
+                        <div class="leaderboard-medal">
+                            {% if loop.index == 1 %}
+                                🥇
+                            {% elif loop.index == 2 %}
+                                🥈
+                            {% elif loop.index == 3 %}
+                                🥉
+                            {% else %}
+                                <span class="leaderboard-rank-number">#{{ loop.index }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="leaderboard-model-name">
+                            <a href="/model/{{ model }}" class="has-text-grey-darker font-weight-bold">{{ model }}</a>
+                        </div>
+                        <div class="leaderboard-score-value">{{ "%.1f"|format(score) }}%</div>
+                        <div class="leaderboard-badge">
+                            {% if score >= 90 %}
+                                <span class="tag is-success is-light" style="font-weight: 700;" data-i18n="comp_excellent">EXCELLENT</span>
+                            {% elif score >= 70 %}
+                                <span class="tag is-warning is-light" style="font-weight: 700; color: #363636;" data-i18n="comp_stable">STABLE</span>
+                            {% else %}
+                                <span class="tag is-danger is-light" style="font-weight: 700;" data-i18n="comp_needs_improvement">NEEDS IMPROVEMENT</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="has-text-centered py-6 has-text-grey" data-i18n="comp_no_audits">
+                        No audits performed yet.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
 
-    {% for model, score in comparison.items() %}
-        <p><b>{{ model }}</b>: {{ score }}</p>
-    {% endfor %}
-</div>
-
-<!-- CHART -->
-<div class="box">
-    <canvas id="chart"></canvas>
+        <!-- CHART -->
+        <div class="column is-7">
+            <div class="leaderboard-container">
+                <h2 class="title is-4 mb-4" data-i18n="dash_performance_chart">📊 Performance Distribution</h2>
+                <div class="chart-container" style="position: relative; height: 350px;">
+                    <canvas id="chart" style="height: 100%;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -38,6 +124,16 @@ function renderChart(label) {
         chartInstance.destroy();
     }
     
+    // Create Gradient for bar fills
+    const canvasCtx = ctx.getContext('2d');
+    const barGradient = canvasCtx.createLinearGradient(0, 0, 0, 300);
+    barGradient.addColorStop(0, 'rgba(79, 70, 229, 0.85)'); // Indigo-600
+    barGradient.addColorStop(1, 'rgba(217, 70, 239, 0.35)');  // Fuchsia-500
+
+    const hoverGradient = canvasCtx.createLinearGradient(0, 0, 0, 300);
+    hoverGradient.addColorStop(0, 'rgba(79, 70, 229, 1)');
+    hoverGradient.addColorStop(1, 'rgba(217, 70, 239, 0.7)');
+    
     chartInstance = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -45,29 +141,79 @@ function renderChart(label) {
             datasets: [{
                 label: label,
                 data: {{ comparison.values()|list|tojson }},
-                backgroundColor: 'rgba(72, 95, 199, 0.2)',
-                borderColor: 'rgba(72, 95, 199, 1)',
-                borderWidth: 1
+                backgroundColor: barGradient,
+                hoverBackgroundColor: hoverGradient,
+                borderColor: 'rgba(79, 70, 229, 1)',
+                borderWidth: 1.5,
+                borderRadius: 8,
+                borderSkipped: false
             }]
         },
         options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    padding: 12,
+                    backgroundColor: '#1e293b',
+                    titleFont: {
+                        family: "'Inter', sans-serif",
+                        size: 13,
+                        weight: 'bold'
+                    },
+                    bodyFont: {
+                        family: "'Inter', sans-serif",
+                        size: 12
+                    },
+                    callbacks: {
+                        label: function(context) {
+                            return ` ${context.dataset.label}: ${context.raw}%`;
+                        }
+                    }
+                }
+            },
             scales: {
                 y: {
                     beginAtZero: true,
-                    max: 100
+                    max: 100,
+                    grid: {
+                        color: '#f1f5f9'
+                    },
+                    ticks: {
+                        font: {
+                            family: "'Inter', sans-serif",
+                            weight: '500'
+                        },
+                        color: '#64748b'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: {
+                            family: "'Inter', sans-serif",
+                            weight: '600'
+                        },
+                        color: '#475569'
+                    }
                 }
             }
         }
     });
 }
 
-// Translate Chart dynamically based on language selection
+// Get localized series names
 function getChartLabel(lang) {
     const labels = {
-        "en-US": "Model Performance",
-        "de-DE": "Modellleistung",
-        "fr-FR": "Performance du modèle",
-        "es-ES": "Rendimiento del modelo"
+        "en-US": "Average Score",
+        "de-DE": "Durchschnittspunktzahl",
+        "fr-FR": "Score moyen",
+        "es-ES": "Puntuación media"
     };
     return labels[lang] || labels["en-US"];
 }
@@ -76,6 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const initialLang = localStorage.getItem("selectedLang") || "en-US";
     renderChart(getChartLabel(initialLang));
     
+    // Listen for global language changes
     window.addEventListener("languageChanged", (e) => {
         const lang = e.detail.lang;
         renderChart(getChartLabel(lang));
