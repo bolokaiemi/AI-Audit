@@ -19,8 +19,12 @@ from audit_storage_db import (
     get_training_requests,
     get_user_training_requests,
     update_training_request_status,
-    get_training_request_by_id
+    get_training_request_by_id,
+    get_user_by_email,
+    update_user_password_by_email
 )
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
+from email_notifier import send_reset_password_email
 
 # Tests
 from tests.language_test import run_language_test
@@ -52,9 +56,9 @@ TESTER_USERNAME = os.getenv("TESTER_USERNAME")
 TESTER_PASSWORD = os.getenv("TESTER_PASSWORD")
 
 if ADMIN_USERNAME and ADMIN_PASSWORD:
-    create_user(ADMIN_USERNAME, ADMIN_PASSWORD, "ADMIN")
+    create_user(ADMIN_USERNAME, ADMIN_PASSWORD, "ADMIN", email=os.getenv("ADMIN_EMAIL", "admin@example.com"))
 if TESTER_USERNAME and TESTER_PASSWORD:
-    create_user(TESTER_USERNAME, TESTER_PASSWORD, "USER")
+    create_user(TESTER_USERNAME, TESTER_PASSWORD, "USER", email=os.getenv("TESTER_EMAIL", "tester@example.com"))
 
 
 # =========================================
@@ -132,6 +136,101 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for('index'))
+
+
+# =========================
+# USER REGISTRATION & RECOVERY ROUTES
+# =========================
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if 'user' in session:
+        return redirect(url_for('index'))
+        
+    error = None
+    success = None
+    
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        email = request.form.get("email", "").strip()
+        password = request.form.get("password", "")
+        confirm_password = request.form.get("confirm_password", "")
+        
+        if not username or not email or not password:
+            error = "Please fill in all fields."
+        elif password != confirm_password:
+            error = "Passwords do not match."
+        else:
+            # Attempt to create user
+            registered = create_user(username, password, role="USER", email=email)
+            if registered:
+                success = "Account created successfully! You can now log in."
+                return render_template("login.html", success=success)
+            else:
+                error = "Username or Email already exists."
+                
+    return render_template("register.html", error=error)
+
+
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    if 'user' in session:
+        return redirect(url_for('index'))
+        
+    error = None
+    success = None
+    
+    if request.method == "POST":
+        email = request.form.get("email", "").strip()
+        if not email:
+            error = "Please enter your email address."
+        else:
+            user = get_user_by_email(email)
+            if user:
+                # Generate time-sensitive token
+                serializer = URLSafeTimedSerializer(app.secret_key)
+                token = serializer.dumps(email, salt="password-reset-salt")
+                
+                # Construct reset link
+                reset_link = url_for("reset_password", token=token, _external=True)
+                
+                # Send email (prints to logs if SMTP not configured)
+                send_reset_password_email(email, reset_link)
+                
+                success = "If this email is registered, you will receive a reset link shortly."
+            else:
+                # Still show success for security to prevent email enumeration, but print fallback log if not found
+                print(f"[Forgot Password] Email {email} not found in database.")
+                success = "If this email is registered, you will receive a reset link shortly."
+                
+    return render_template("forgot_password.html", error=error, success=success)
+
+
+@app.route("/reset-password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    if 'user' in session:
+        return redirect(url_for('index'))
+        
+    serializer = URLSafeTimedSerializer(app.secret_key)
+    try:
+        # Token valid for 1 hour (3600 seconds)
+        email = serializer.loads(token, salt="password-reset-salt", max_age=3600)
+    except (SignatureExpired, BadTimeSignature):
+        return render_template("forgot_password.html", error="The password reset link is invalid or has expired.")
+        
+    error = None
+    if request.method == "POST":
+        password = request.form.get("password", "")
+        confirm_password = request.form.get("confirm_password", "")
+        
+        if not password:
+            error = "Please enter a new password."
+        elif password != confirm_password:
+            error = "Passwords do not match."
+        else:
+            update_user_password_by_email(email, password)
+            return render_template("login.html", success="Password successfully updated! You can now log in.")
+            
+    return render_template("reset_password.html", error=error, token=token)
 
 
 # =========================

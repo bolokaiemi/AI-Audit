@@ -47,13 +47,20 @@ def create_tables():
         username TEXT UNIQUE,
         password TEXT,
         role TEXT,
-        api_key TEXT
+        api_key TEXT,
+        email TEXT UNIQUE
     )
     """)
 
     # Ensure api_key column exists (migration helper)
     try:
         cur.execute("ALTER TABLE users ADD COLUMN api_key TEXT")
+    except sqlite3.OperationalError:
+        pass
+
+    # Ensure email column exists (migration helper)
+    try:
+        cur.execute("ALTER TABLE users ADD COLUMN email TEXT")
     except sqlite3.OperationalError:
         pass
 
@@ -163,16 +170,17 @@ def get_audits_by_model(model_name):
     return rows
 
 
-def create_user(username, password, role="USER"):
+def create_user(username, password, role="USER", email=None):
     conn = get_connection()
     cur = conn.cursor()
     hashed = generate_password_hash(password)
     api_key = "audit_" + secrets.token_hex(16)
     try:
-        cur.execute("INSERT INTO users (username, password, role, api_key) VALUES (?, ?, ?, ?)", (username, hashed, role, api_key))
+        cur.execute("INSERT INTO users (username, password, role, api_key, email) VALUES (?, ?, ?, ?, ?)", (username, hashed, role, api_key, email))
         conn.commit()
+        return True
     except sqlite3.IntegrityError:
-        pass
+        return False
     finally:
         conn.close()
 
@@ -186,6 +194,26 @@ def verify_user(username, password):
     if row and check_password_hash(row[2], password):
         return {"username": row[0], "role": row[1]}
     return None
+
+
+def get_user_by_email(email):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT username, role, api_key, email FROM users WHERE email = ?", (email,))
+    row = cur.fetchone()
+    conn.close()
+    if row:
+        return {"username": row[0], "role": row[1], "api_key": row[2], "email": row[3]}
+    return None
+
+
+def update_user_password_by_email(email, new_password):
+    conn = get_connection()
+    cur = conn.cursor()
+    hashed = generate_password_hash(new_password)
+    cur.execute("UPDATE users SET password = ? WHERE email = ?", (hashed, email))
+    conn.commit()
+    conn.close()
 
 
 def update_user_password(username, new_password):

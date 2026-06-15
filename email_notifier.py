@@ -48,3 +48,53 @@ The AI Auditor Support Team
     except Exception as e:
         print(f"[Email Notifier] Failed to send email: {e}")
         return False
+
+
+def send_reset_password_email(to_email, reset_link):
+    load_dotenv()
+    smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
+    try:
+        smtp_port = int(os.getenv("SMTP_PORT", "587"))
+    except (ValueError, TypeError):
+        smtp_port = 587
+    smtp_email = os.getenv("SMTP_EMAIL")
+    smtp_password = os.getenv("SMTP_PASSWORD")
+
+    if not smtp_email or not smtp_password:
+        print(f"\n[Email Notifier] SMTP credentials not set in env.\n[Email Notifier] Reset Link for {to_email}:\n{reset_link}\n")
+        return False
+
+    subject = "🔑 Reset Your AI Auditor Password"
+    body = f"""Hi,
+
+You requested a password reset for your AI Auditor account. 
+
+Please click the link below to reset your password. This link is valid for 1 hour:
+
+{reset_link}
+
+If you did not request this reset, please ignore this email.
+
+Best regards,
+The AI Auditor Support Team
+"""
+
+    msg = MIMEMultipart()
+    msg['From'] = smtp_email
+    msg['To'] = to_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
+
+    try:
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(smtp_email, smtp_password)
+        server.sendmail(smtp_email, to_email, msg.as_string())
+        server.quit()
+        print(f"[Email Notifier] Password reset email sent successfully to {to_email}")
+        return True
+    except Exception as e:
+        print(f"[Email Notifier] Failed to send email to {to_email}: {e}")
+        print(f"\n[Email Notifier] Fallback Reset Link:\n{reset_link}\n")
+        return False
+

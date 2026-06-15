@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title data-i18n="register_title">Create Account - AI Auditor</title>
+    <!-- Bulma CSS CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif !important;
+        }
+    </style>
+</head>
+
+<body class="login-bg">
+    <div class="container px-4">
+        <div class="columns is-centered">
+            <div class="column is-5-tablet is-4-desktop">
+                
+                <div class="has-text-centered mb-5">
+                    <span class="title is-2 has-text-white" style="font-weight: 800; letter-spacing: 1px;">
+                        ⚡ AI AUDITOR
+                    </span>
+                </div>
+
+                <div class="login-card p-6">
+                    <h2 class="title is-4 has-text-centered mb-5" style="color: #2c3e50; font-weight: 700;" data-i18n="register_card_title">Create New Account</h2>
+
+                    {% if error %}
+                    <div class="notification is-danger is-light py-3 px-4 mb-4 is-size-7" style="border-radius: 8px; font-weight: 600;">
+                        ⚠️ {{ error }}
+                    </div>
+                    {% endif %}
+
+                    <form method="POST" action="/register" autocomplete="off">
+                        <div class="field">
+                            <label class="label" data-i18n="register_username_lbl">Username</label>
+                            <div class="control">
+                                <input class="input" type="text" name="username" required autocomplete="off" style="font-weight: 600;">
+                            </div>
+                        </div>
+
+                        <div class="field mt-4">
+                            <label class="label" data-i18n="register_email_lbl">Email Address</label>
+                            <div class="control">
+                                <input class="input" type="email" name="email" required autocomplete="off" style="font-weight: 600;">
+                            </div>
+                        </div>
+
+                        <div class="field mt-4">
+                            <label class="label" data-i18n="register_password_lbl">Password</label>
+                            <div class="control">
+                                <input class="input" type="password" name="password" required autocomplete="new-password" style="font-weight: 600;">
+                            </div>
+                        </div>
+
+                        <div class="field mt-4">
+                            <label class="label" data-i18n="register_confirm_password_lbl">Confirm Password</label>
+                            <div class="control">
+                                <input class="input" type="password" name="confirm_password" required autocomplete="new-password" style="font-weight: 600;">
+                            </div>
+                        </div>
+
+                        <div class="control mt-6">
+                            <button class="button btn-login-styled is-fullwidth" type="submit" data-i18n="register_submit_btn">
+                                Register
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-5 has-text-centered is-size-7">
+                        <a href="/login" class="has-text-link font-weight-bold" data-i18n="register_login_link">Already have an account? Sign In</a>
+                    </div>
+                </div>
+
+                <div class="has-text-centered mt-4">
+                    <a href="/" class="has-text-grey-light is-size-7 font-weight-bold" style="text-decoration: underline;" data-i18n="login_back_home">
+                        ← Back to homepage
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const UI_TRANSLATIONS = {
+            "en-US": {
+                "register_title": "Create Account - AI Auditor",
+                "register_card_title": "Create New Account",
+                "register_username_lbl": "Username",
+                "register_email_lbl": "Email Address",
+                "register_password_lbl": "Password",
+                "register_confirm_password_lbl": "Confirm Password",
+                "register_submit_btn": "Register",
+                "register_login_link": "Already have an account? Sign In",
+                "login_back_home": "← Back to homepage"
+            },
+            "de-DE": {
+                "register_title": "Konto erstellen - AI Auditor",
+                "register_card_title": "Neues Konto erstellen",
+                "register_username_lbl": "Benutzername",
+                "register_email_lbl": "E-Mail-Adresse",
+                "register_password_lbl": "Passwort",
+                "register_confirm_password_lbl": "Passwort bestätigen",
+                "register_submit_btn": "Registrieren",
+                "register_login_link": "Bereits ein Konto? Einloggen",
+                "login_back_home": "← Zurück zur Startseite"
+            },
+            "fr-FR": {
+                "register_title": "Créer un compte - AI Auditor",
+                "register_card_title": "Créer un nouveau compte",
+                "register_username_lbl": "Nom d'utilisateur",
+                "register_email_lbl": "Adresse e-mail",
+                "register_password_lbl": "Mot de passe",
+                "register_confirm_password_lbl": "Confirmer le mot de passe",
+                "register_submit_btn": "S'inscrire",
+                "register_login_link": "Vous avez déjà un compte ? Se connecter",
+                "login_back_home": "← Retour à la page d'accueil"
+            },
+            "es-ES": {
+                "register_title": "Crear cuenta - AI Auditor",
+                "register_card_title": "Crear nueva cuenta",
+                "register_username_lbl": "Nombre de usuario",
+                "register_email_lbl": "Correo electrónico",
+                "register_password_lbl": "Contraseña",
+                "register_confirm_password_lbl": "Confirmar contraseña",
+                "register_submit_btn": "Registrarse",
+                "register_login_link": "¿Ya tiene una cuenta? Iniciar sesión",
+                "login_back_home": "← Volver a la página de inicio"
+            }
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedLang = localStorage.getItem("selectedLang") || "en-US";
+            const dict = UI_TRANSLATIONS[savedLang] || UI_TRANSLATIONS["en-US"];
+            
+            // Set page title
+            if (dict["register_title"]) {
+                document.title = dict["register_title"];
+            }
+
+            document.querySelectorAll("[data-i18n]").forEach(el => {
+                const key = el.getAttribute("data-i18n");
+                if (dict[key]) {
+                    if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+                        el.placeholder = dict[key];
+                    } else {
+                        el.innerHTML = dict[key];
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
