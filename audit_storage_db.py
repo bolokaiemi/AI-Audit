@@ -64,6 +64,18 @@ def create_tables():
     except sqlite3.OperationalError:
         pass
 
+    # Ensure patch_reason column exists in audits (migration helper)
+    try:
+        cur.execute("ALTER TABLE audits ADD COLUMN patch_reason TEXT")
+    except sqlite3.OperationalError:
+        pass
+
+    # Ensure patch_code column exists in audits (migration helper)
+    try:
+        cur.execute("ALTER TABLE audits ADD COLUMN patch_code TEXT")
+    except sqlite3.OperationalError:
+        pass
+
     # Backfill missing API keys
     cur.execute("SELECT id FROM users WHERE api_key IS NULL")
     null_users = cur.fetchall()
@@ -84,6 +96,22 @@ def create_tables():
     )
     """)
 
+    # MARKETPLACE MODELS
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS marketplace_models (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        model_name TEXT,
+        category TEXT,
+        description TEXT,
+        price REAL,
+        status TEXT,
+        audit_id INTEGER,
+        seller_username TEXT,
+        created_at TEXT,
+        FOREIGN KEY(audit_id) REFERENCES audits(id)
+    )
+    """)
+
     conn.commit()
     conn.close()
 
@@ -100,9 +128,11 @@ def save_audit(data):
         boundary_score,
         overall_score,
         status,
-        created_at
+        created_at,
+        patch_reason,
+        patch_code
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         data["model_name"],
         data["language_score"],
@@ -110,7 +140,9 @@ def save_audit(data):
         data["boundary_score"],
         data["overall_score"],
         data["status"],
-        datetime.now().isoformat()
+        datetime.now().isoformat(),
+        data.get("patch_reason"),
+        data.get("patch_code")
     ))
 
     conn.commit()
@@ -253,6 +285,7 @@ def reset_database():
     cur.execute("DELETE FROM audits")
     cur.execute("DELETE FROM complaints")
     cur.execute("DELETE FROM training_requests")
+    cur.execute("DELETE FROM marketplace_models")
     conn.commit()
     conn.close()
 
@@ -301,4 +334,35 @@ def get_training_request_by_id(request_id):
     row = cur.fetchone()
     conn.close()
     return row
+
+
+def save_marketplace_model(model_name, category, description, price, status, audit_id, seller_username):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+    INSERT INTO marketplace_models (
+        model_name, category, description, price, status, audit_id, seller_username, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        model_name, category, description, price, status, audit_id, seller_username, datetime.now().isoformat()
+    ))
+    conn.commit()
+    conn.close()
+
+
+def get_marketplace_models():
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM marketplace_models ORDER BY id DESC")
+    rows = cur.fetchall()
+    conn.close()
+    return rows
+
+
+def update_marketplace_status(model_id, status, audit_id):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE marketplace_models SET status = ?, audit_id = ? WHERE id = ?", (status, audit_id, model_id))
+    conn.commit()
+    conn.close()
 

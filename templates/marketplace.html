@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="main-container">
+    
+    <!-- HEADER -->
+    <div class="columns is-vcentered mb-5">
+        <div class="column">
+            <h1 class="title is-2" data-i18n="market_title">🛒 AI Safety Marketplace</h1>
+            <p class="subtitle is-5 has-text-grey" data-i18n="market_subtitle">Browse safety-verified AI models or submit your own listings for validation auditing.</p>
+        </div>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    {% if success %}
+    <div class="notification is-success is-light py-3 px-4 mb-5" style="border-radius: 8px; font-weight: 600;">
+        ✅ {{ success }}
+    </div>
+    {% endif %}
+    {% if error %}
+    <div class="notification is-danger is-light py-3 px-4 mb-5" style="border-radius: 8px; font-weight: 600;">
+        ⚠️ {{ error }}
+    </div>
+    {% endif %}
+
+    <!-- NAVIGATION TABS -->
+    <div class="tabs is-boxed mb-6">
+        <ul>
+            <li id="marketTab" class="is-active">
+                <a onclick="switchTab('market')" style="font-weight: 700; gap: 6px;">
+                    <span>🛒</span> <span data-i18n="market_tab_browse">Browse Marketplace</span>
+                </a>
+            </li>
+            <li id="sellerTab">
+                <a onclick="switchTab('seller')" style="font-weight: 700; gap: 6px;">
+                    <span>🛠️</span> <span data-i18n="market_tab_seller">Seller Console</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- =========================================
+         TAB 1: PUBLIC MARKETPLACE
+         ========================================= -->
+    <div id="marketSection">
+        <div class="columns is-multiline">
+            {% set ns = namespace(has_verified=false) %}
+            {% for m in models %}
+                {% if m[5] == 'VERIFIED' %}
+                    {% set ns.has_verified = true %}
+                    <div class="column is-4">
+                        <div class="fail-card fail-card-blue" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #e2e8f0; background: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                            <div>
+                                <div class="is-flex is-justify-content-between is-align-items-center mb-3">
+                                    <span class="tag is-info is-light" style="font-weight: 700;">{{ m[2] }}</span>
+                                    <span class="tag is-success" style="font-weight: 800; font-size: 0.95rem;">${{ "%.2f"|format(m[4]) }}</span>
+                                </div>
+                                <h3 class="title is-4 mb-2" style="color: #1e293b; font-weight: 700;">{{ m[1] }}</h3>
+                                <p class="is-size-6 has-text-grey mb-4" style="line-height: 1.4; min-height: 60px;">{{ m[3] }}</p>
+                            </div>
+                            
+                            <div style="border-top: 1px solid #f1f5f9; padding-top: 15px;" class="mt-4">
+                                <div class="is-flex is-justify-content-between is-align-items-center mb-3">
+                                    <span class="tag is-success is-medium" style="font-weight: 700; gap: 6px; border-radius: 6px;">
+                                        🛡️ <span data-i18n="market_verified_lbl">VERIFIED</span>
+                                    </span>
+                                    
+                                    {% if m[6] %}
+                                    <a href="/reports/report_{{ m[6] }}.pdf" class="button is-small is-link is-outlined" style="font-weight: 600;" download>
+                                        📄 <span data-i18n="market_report_btn">PDF Report</span>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                <button onclick="buyModel('{{ m[1] }}')" class="button is-primary is-fullwidth" style="font-weight: 700;">
+                                    🛒 <span data-i18n="market_purchase_btn">Buy Model</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            
+            {% if not ns.has_verified %}
+            <div class="column is-12">
+                <div class="box has-text-centered py-6 has-text-grey" style="box-shadow: none; border: 2px dashed #e2e8f0;">
+                    <p class="is-size-5 mb-2">🛍️ <span data-i18n="market_empty">No verified models listed yet.</span></p>
+                    <p class="is-size-7" data-i18n="market_empty_desc">Submit a model through the Seller Console to audit it and list it here!</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- =========================================
+         TAB 2: SELLER CONSOLE
+         ========================================= -->
+    <div id="sellerSection" class="is-hidden">
+        <div class="columns mb-6">
+            <!-- SUBMIT FORM -->
+            <div class="column is-5">
+                <div class="audit-card">
+                    <h2 class="title is-4 mb-4" data-i18n="market_submit_title">🚀 Submit Model for Listing</h2>
+                    <form method="POST" action="/marketplace/submit">
+                        <div class="field">
+                            <label class="label" data-i18n="market_lbl_model">Model Name</label>
+                            <div class="control">
+                                <input class="input" type="text" name="model_name" placeholder="e.g. MedVision-7B" required>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label" data-i18n="market_lbl_category">Category</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select name="category" required>
+                                        <option value="Healthcare Imaging & Analytics" data-i18n="cat_healthcare">Healthcare Imaging & Analytics</option>
+                                        <option value="Financial Fraud & Risk" data-i18n="cat_finance">Financial Fraud & Risk</option>
+                                        <option value="E-Commerce & Dynamic Pricing" data-i18n="cat_ecommerce">E-Commerce & Dynamic Pricing</option>
+                                        <option value="Customer Support Chatbots" data-i18n="cat_chatbot">Customer Support Chatbots</option>
+                                        <option value="Legal Contract Analysis" data-i18n="cat_legal">Legal Contract Analysis</option>
+                                        <option value="Logistics & Predictive Maintenance" data-i18n="cat_logistics">Logistics & Predictive Maintenance</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label" data-i18n="market_lbl_desc">Description</label>
+                            <div class="control">
+                                <textarea class="textarea" name="description" placeholder="Describe capabilities, accuracy details, and deployment scenarios..." rows="3" required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label" data-i18n="market_lbl_price">Listing Price ($)</label>
+                            <div class="control">
+                                <input class="input" type="number" name="price" placeholder="49.99" step="0.01" min="0" required>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label" style="display: flex; justify-content: space-between; align-items: center;">
+                                <span data-i18n="market_lbl_transcript">Safety Validation Transcript</span>
+                                <span class="tag is-info is-light" style="font-weight: 500;" data-i18n="market_transcript_hint">Audit Trigger</span>
+                            </label>
+                            <div class="control">
+                                <textarea class="textarea" name="transcript" placeholder="Paste a representative dialogue transcript containing model answers to evaluate compliance..." rows="6" required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="control mt-5">
+                            <button type="submit" class="button is-primary is-fullwidth" style="font-weight: 700;" data-i18n="market_submit_btn">
+                                🛡️ Run Verification & List
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- MY SUBMISSIONS -->
+            <div class="column is-7">
+                <div class="audit-card" style="height: 100%;">
+                    <h2 class="title is-4 mb-4" data-i18n="market_console_title">📋 My Submissions Console</h2>
+                    
+                    <div style="max-height: 700px; overflow-y: auto; padding-right: 5px;">
+                        {% set my_models = [] %}
+                        {% for m in models %}
+                            {% if m[7] == session['user'] %}
+                                {% set my_models = my_models + [m] %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% for m in my_models %}
+                        <div class="box mb-4" style="border: 1px solid #e2e8f0; background: #fafbfc; border-radius: 8px;">
+                            <div class="is-flex is-justify-content-between is-align-items-start">
+                                <div>
+                                    <h4 class="title is-5 mb-1" style="color: #2d3748; font-weight: 700;">{{ m[1] }}</h4>
+                                    <p class="is-size-7 has-text-grey">{{ m[2] }} | ${{ "%.2f"|format(m[4]) }}</p>
+                                </div>
+                                
+                                <div>
+                                    {% if m[5] == 'VERIFIED' %}
+                                        <span class="tag is-success" style="font-weight: 700; gap: 4px;">🛡️ <span data-i18n="market_verified_lbl">VERIFIED</span></span>
+                                    {% else %}
+                                        <span class="tag is-danger" style="font-weight: 700; gap: 4px;">❌ <span data-i18n="market_rejected_lbl">REJECTED</span></span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Fetch details of the associated audit -->
+                            {% set ns = namespace(found_audit=none) %}
+                            {% for a in audits %}
+                                {% if a[0] == m[6] %}
+                                    {% set ns.found_audit = a %}
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if ns.found_audit %}
+                            <div class="mt-3 py-2 px-3" style="background: #f1f5f9; border-radius: 6px; border-left: 3px solid {% if ns.found_audit[6] == 'PASS' %}#48bb78{% else %}#f56565{% endif %};">
+                                <p class="is-size-7">
+                                    <strong><span data-i18n="market_audit_score_lbl">Audit Safety Score:</span></strong> {{ ns.found_audit[5] }}%
+                                    | <strong>Verdict:</strong> {{ ns.found_audit[6] }}
+                                </p>
+                                {% if ns.found_audit[6] == 'FAIL' and ns.found_audit[8] %}
+                                <div class="mt-2" style="border-top: 1px dashed #cbd5e1; padding-top: 8px;">
+                                    <p class="is-size-7 has-text-danger mb-2"><strong>Reason:</strong> {{ ns.found_audit[7] }}</p>
+                                    <p class="is-size-7 mb-1"><strong>Suggested Prompt Patch:</strong></p>
+                                    <textarea readonly class="textarea is-small" style="font-family: monospace; background: #fff; border-color: #f56565; color: #4a5568; min-height: 80px;">{{ ns.found_audit[8] }}</textarea>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <div class="has-text-centered py-6 has-text-grey" data-i18n="market_no_submissions">
+                            You haven't submitted any models under this account yet.
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(tab) {
+        const marketTab = document.getElementById("marketTab");
+        const sellerTab = document.getElementById("sellerTab");
+        const marketSec = document.getElementById("marketSection");
+        const sellerSec = document.getElementById("sellerSection");
+        
+        if (tab === 'market') {
+            marketTab.classList.add("is-active");
+            sellerTab.classList.remove("is-active");
+            marketSec.classList.remove("is-hidden");
+            sellerSec.classList.add("is-hidden");
+            localStorage.setItem("activeMarketTab", "market");
+        } else {
+            sellerTab.classList.add("is-active");
+            marketTab.classList.remove("is-active");
+            sellerSec.classList.remove("is-hidden");
+            marketSec.classList.add("is-hidden");
+            localStorage.setItem("activeMarketTab", "seller");
+        }
+    }
+    
+    // Restore tab state on page load
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedTab = localStorage.getItem("activeMarketTab") || "market";
+        switchTab(savedTab);
+    });
+
+    function buyModel(name) {
+        const lang = localStorage.getItem("selectedLang") || "en-US";
+        const messages = {
+            "en-US": `Proceeding to checkout for model '${name}'... (Simulation only)`,
+            "de-DE": `Weiter zur Kasse für das Modell '${name}'... (Nur Simulation)`,
+            "fr-FR": `Passage à la caisse pour le modèle '${name}'... (Simulation uniquement)`,
+            "es-ES": `Procediendo al pago del modelo '${name}'... (Solo simulación)`
+        };
+        alert(messages[lang] || messages["en-US"]);
+    }
+</script>
+{% endblock %}
