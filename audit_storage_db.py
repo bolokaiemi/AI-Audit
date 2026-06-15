@@ -64,6 +64,19 @@ def create_tables():
         new_key = "audit_" + secrets.token_hex(16)
         cur.execute("UPDATE users SET api_key = ? WHERE id = ?", (new_key, u[0]))
 
+    # TRAINING REQUESTS
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS training_requests (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
+        model_name TEXT,
+        issue_description TEXT,
+        contact_email TEXT,
+        status TEXT DEFAULT 'PENDING',
+        created_at TEXT
+    )
+    """)
+
     conn.commit()
     conn.close()
 
@@ -211,6 +224,53 @@ def reset_database():
     cur = conn.cursor()
     cur.execute("DELETE FROM audits")
     cur.execute("DELETE FROM complaints")
+    cur.execute("DELETE FROM training_requests")
     conn.commit()
     conn.close()
+
+
+def create_training_request(username, model_name, issue_description, contact_email):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+    INSERT INTO training_requests (username, model_name, issue_description, contact_email, created_at)
+    VALUES (?, ?, ?, ?, ?)
+    """, (username, model_name, issue_description, contact_email, datetime.now().isoformat()))
+    conn.commit()
+    conn.close()
+
+
+def get_training_requests():
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id, username, model_name, issue_description, contact_email, status, created_at FROM training_requests ORDER BY id DESC")
+    rows = cur.fetchall()
+    conn.close()
+    return rows
+
+
+def get_user_training_requests(username):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id, username, model_name, issue_description, contact_email, status, created_at FROM training_requests WHERE username = ? ORDER BY id DESC", (username,))
+    rows = cur.fetchall()
+    conn.close()
+    return rows
+
+
+def update_training_request_status(request_id, status):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE training_requests SET status = ? WHERE id = ?", (status, request_id))
+    conn.commit()
+    conn.close()
+
+
+def get_training_request_by_id(request_id):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id, username, model_name, issue_description, contact_email, status, created_at FROM training_requests WHERE id = ?", (request_id,))
+    row = cur.fetchone()
+    conn.close()
+    return row
 

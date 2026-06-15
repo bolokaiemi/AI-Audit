@@ -2,20 +2,20 @@
 
 {% block content %}
 
-<h1 class="title">AI Auditor Dashboard</h1>
+<h1 class="title" data-i18n="dash_title">AI Auditor Dashboard</h1>
 
 <!-- FAILURE METRICS -->
 <div class="box">
-    <h2 class="subtitle">Failure Analytics</h2>
+    <h2 class="subtitle" data-i18n="dash_fail_analytics">Failure Analytics</h2>
 
-    <p>Language Fail Rate: {{ analysis.language_failure_rate }}%</p>
-    <p>Instruction Fail Rate: {{ analysis.instruction_failure_rate }}%</p>
-    <p>Boundary Fail Rate: {{ analysis.boundary_failure_rate }}%</p>
+    <p><strong data-i18n="dash_lang_fail">Language Fail Rate:</strong> {{ analysis.language_failure_rate }}%</p>
+    <p><strong data-i18n="dash_inst_fail">Instruction Fail Rate:</strong> {{ analysis.instruction_failure_rate }}%</p>
+    <p><strong data-i18n="dash_bound_fail">Boundary Fail Rate:</strong> {{ analysis.boundary_failure_rate }}%</p>
 </div>
 
 <!-- MODEL COMPARISON -->
 <div class="box">
-    <h2 class="subtitle">Model Benchmark</h2>
+    <h2 class="subtitle" data-i18n="dash_model_benchmark">Model Benchmark</h2>
 
     {% for model, score in comparison.items() %}
         <p><b>{{ model }}</b>: {{ score }}</p>
@@ -31,16 +31,55 @@
 
 <script>
 const ctx = document.getElementById('chart');
+let chartInstance = null;
 
-new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: {{ comparison.keys()|list|tojson }},
-        datasets: [{
-            label: 'Model Performance',
-            data: {{ comparison.values()|list|tojson }}
-        }]
+function renderChart(label) {
+    if (chartInstance) {
+        chartInstance.destroy();
     }
+    
+    chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ comparison.keys()|list|tojson }},
+            datasets: [{
+                label: label,
+                data: {{ comparison.values()|list|tojson }},
+                backgroundColor: 'rgba(72, 95, 199, 0.2)',
+                borderColor: 'rgba(72, 95, 199, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+}
+
+// Translate Chart dynamically based on language selection
+function getChartLabel(lang) {
+    const labels = {
+        "en-US": "Model Performance",
+        "de-DE": "Modellleistung",
+        "fr-FR": "Performance du modèle",
+        "es-ES": "Rendimiento del modelo"
+    };
+    return labels[lang] || labels["en-US"];
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const initialLang = localStorage.getItem("selectedLang") || "en-US";
+    renderChart(getChartLabel(initialLang));
+    
+    window.addEventListener("languageChanged", (e) => {
+        const lang = e.detail.lang;
+        renderChart(getChartLabel(lang));
+    });
 });
 </script>
 

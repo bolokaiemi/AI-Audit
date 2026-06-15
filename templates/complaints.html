@@ -6,37 +6,37 @@
         <!-- SUBMIT COMPLAINT COLUMN -->
         <div class="column is-7">
             <div class="audit-card">
-                <h1 class="title is-4 mb-4">📥 Submit Model Complaint</h1>
+                <h1 class="title is-4 mb-4" data-i18n="compl_submit_title">📥 Submit Model Complaint</h1>
                 <form method="POST">
                     <div class="field">
-                        <label class="label">Model Name</label>
+                        <label class="label" data-i18n="compl_model_name">Model Name</label>
                         <div class="control">
                             <input class="input" name="model_name" placeholder="e.g. gpt-4, claude-3" required>
                         </div>
                     </div>
 
                     <div class="field">
-                        <label class="label">Describe Issue</label>
+                        <label class="label" data-i18n="compl_desc_issue">Describe Issue</label>
                         <div class="control">
                             <textarea class="textarea" name="issue" placeholder="Describe the failure, hallucination, or instruction-following violation..." required></textarea>
                         </div>
                     </div>
 
                     <div class="field">
-                        <label class="label">Severity Level</label>
+                        <label class="label" data-i18n="compl_severity_lbl">Severity Level</label>
                         <div class="control">
                             <div class="select is-fullwidth">
                                 <select name="severity">
-                                    <option value="LOW">LOW</option>
-                                    <option value="MEDIUM" selected>MEDIUM</option>
-                                    <option value="HIGH">HIGH</option>
+                                    <option value="LOW" data-i18n="compl_sev_low">LOW</option>
+                                    <option value="MEDIUM" selected data-i18n="compl_sev_med">MEDIUM</option>
+                                    <option value="HIGH" data-i18n="compl_sev_high">HIGH</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
                     <div class="control mt-5">
-                        <button class="button is-danger is-fullwidth" style="font-weight: 700;">Submit Complaint</button>
+                        <button class="button is-danger is-fullwidth" style="font-weight: 700;" data-i18n="compl_submit_btn">Submit Complaint</button>
                     </div>
                 </form>
             </div>
@@ -45,22 +45,22 @@
         <!-- ADMIN CONTROL PANEL COLUMN -->
         <div class="column is-5">
             <div class="audit-card" style="border: 1px solid #ffccd5; background: #fffcfc;">
-                <h2 class="title is-4 mb-4" style="color: #c53030;">🛠️ Admin Control Panel</h2>
-                <p class="subtitle is-6 has-text-grey mb-5">Perform maintenance actions and export testing statistics.</p>
+                <h2 class="title is-4 mb-4" style="color: #c53030;" data-i18n="compl_admin_panel">🛠️ Admin Control Panel</h2>
+                <p class="subtitle is-6 has-text-grey mb-5" data-i18n="compl_admin_desc">Perform maintenance actions and export testing statistics.</p>
                 
                 <div class="box p-4" style="box-shadow: none; border: 1px solid #e5e7eb;">
-                    <p class="is-size-6 mb-3"><strong>Backup & Exports</strong></p>
-                    <p class="is-size-7 has-text-grey mb-4">Bundle all generated evaluation PDF files from the disk into a dynamically generated ZIP archive.</p>
-                    <a href="/admin/download-all" class="button is-link is-fullwidth" style="font-weight: 700;">
+                    <p class="is-size-6 mb-3"><strong data-i18n="compl_backup_title">Backup & Exports</strong></p>
+                    <p class="is-size-7 has-text-grey mb-4" data-i18n="compl_backup_desc">Bundle all generated evaluation PDF files from the disk into a dynamically generated ZIP archive.</p>
+                    <a href="/admin/download-all" class="button is-link is-fullwidth" style="font-weight: 700;" data-i18n="compl_download_all_btn">
                         📦 Download All Reports (ZIP)
                     </a>
                 </div>
 
                 <div class="box p-4 mt-4" style="box-shadow: none; border: 1px solid #ffccd5; background: #fffdfd;">
-                    <p class="is-size-6 mb-3" style="color: #c53030;"><strong>Reset Platform Data</strong></p>
-                    <p class="is-size-7 has-text-grey mb-4">Purge all logs (audits and complaints) from the database and delete all generated PDF reports to start fresh.</p>
-                    <form method="POST" action="/admin/reset" onsubmit="return confirm('Are you absolutely sure you want to purge all audits logs, complaints logs, and delete all PDF files? This action is permanent.');">
-                        <button type="submit" class="button is-danger is-outlined is-fullwidth" style="font-weight: 700;">
+                    <p class="is-size-6 mb-3" style="color: #c53030;"><strong data-i18n="compl_reset_title">Reset Platform Data</strong></p>
+                    <p class="is-size-7 has-text-grey mb-4" data-i18n="compl_reset_desc">Purge all logs (audits and complaints) from the database and delete all generated PDF reports to start fresh.</p>
+                    <form method="POST" action="/admin/reset" onsubmit="return confirmReset();">
+                        <button type="submit" class="button is-danger is-outlined is-fullwidth" style="font-weight: 700;" data-i18n="compl_reset_btn">
                             🗑️ Reset Database & Reports
                         </button>
                     </form>
@@ -71,15 +71,15 @@
 
     <!-- COMPLAINTS LOG TABLE -->
     <div class="audit-card">
-        <h2 class="title is-4 mb-4">📜 Logged Model Complaints</h2>
+        <h2 class="title is-4 mb-4" data-i18n="compl_logged_title">📜 Logged Model Complaints</h2>
         <div class="table-container">
             <table class="table is-fullwidth is-striped is-hoverable">
                 <thead>
                     <tr>
-                        <th class="has-text-grey-dark">Model</th>
-                        <th class="has-text-grey-dark">Issue / Description</th>
-                        <th class="has-text-centered has-text-grey-dark">Severity</th>
-                        <th class="has-text-right has-text-grey-dark">Status</th>
+                        <th class="has-text-grey-dark" data-i18n="compl_tbl_model">Model</th>
+                        <th class="has-text-grey-dark" data-i18n="compl_tbl_issue">Issue / Description</th>
+                        <th class="has-text-centered has-text-grey-dark" data-i18n="compl_tbl_severity">Severity</th>
+                        <th class="has-text-right has-text-grey-dark" data-i18n="compl_tbl_status">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -93,11 +93,11 @@
                         <td class="is-vcentered">{{ c[2] }}</td>
                         <td class="is-vcentered has-text-centered">
                             {% if c[3] == 'HIGH' %}
-                                <span class="tag is-danger" style="font-weight: 700;">HIGH</span>
+                                <span class="tag is-danger" style="font-weight: 700;" data-i18n="compl_sev_high">HIGH</span>
                             {% elif c[3] == 'MEDIUM' %}
-                                <span class="tag is-warning" style="font-weight: 700; color: #363636;">MEDIUM</span>
+                                <span class="tag is-warning" style="font-weight: 700; color: #363636;" data-i18n="compl_sev_med">MEDIUM</span>
                             {% else %}
-                                <span class="tag is-success is-light" style="font-weight: 700;">LOW</span>
+                                <span class="tag is-success is-light" style="font-weight: 700;" data-i18n="compl_sev_low">LOW</span>
                             {% endif %}
                         </td>
                         <td class="is-vcentered has-text-right">
@@ -106,8 +106,72 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="4" class="has-text-centered py-5 has-text-grey">
+                        <td colspan="4" class="has-text-centered py-5 has-text-grey" data-i18n="compl_no_complaints">
                             No active complaints logged.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- EXPERT TRAINING REQUEST QUEUE FOR ADMIN -->
+    <div class="audit-card mt-6">
+        {% if success %}
+        <div class="notification is-success is-light py-3 px-4 mb-4" style="border-radius: 8px; font-weight: 600;">
+            ✅ {{ success }}
+        </div>
+        {% endif %}
+        {% if error %}
+        <div class="notification is-danger is-light py-3 px-4 mb-4" style="border-radius: 8px; font-weight: 600;">
+            ⚠️ {{ error }}
+        </div>
+        {% endif %}
+
+        <h2 class="title is-4 mb-4" data-i18n="admin_req_title">👨‍🏫 Pending Expert Training Requests</h2>
+        <div class="table-container">
+            <table class="table is-fullwidth is-striped is-hoverable is-size-7">
+                <thead>
+                    <tr>
+                        <th class="has-text-grey-dark" data-i18n="admin_req_username">User</th>
+                        <th class="has-text-grey-dark" data-i18n="admin_req_model">Model</th>
+                        <th class="has-text-grey-dark" data-i18n="admin_req_desc">Malfunction / Issue Description</th>
+                        <th class="has-text-grey-dark" data-i18n="admin_req_email">Contact Email</th>
+                        <th class="has-text-centered has-text-grey-dark" data-i18n="admin_req_status">Status</th>
+                        <th class="has-text-right has-text-grey-dark" data-i18n="admin_req_action">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in training_requests %}
+                    <tr>
+                        <td class="is-vcentered" style="font-weight: 700;">{{ req[1] }}</td>
+                        <td class="is-vcentered font-weight-bold"><span class="tag is-info is-light">{{ req[2] }}</span></td>
+                        <td class="is-vcentered">{{ req[3] }}</td>
+                        <td class="is-vcentered">{{ req[4] }}</td>
+                        <td class="is-vcentered has-text-centered">
+                            {% if req[5] == 'PENDING' %}
+                                <span class="tag is-warning" style="font-weight: 700; color: #363636;">PENDING</span>
+                            {% else %}
+                                <span class="tag is-success" style="font-weight: 700;">TRAINED</span>
+                            {% endif %}
+                        </td>
+                        <td class="is-vcentered has-text-right">
+                            {% if req[5] == 'PENDING' %}
+                            <form method="POST" action="/admin/complete-training/{{ req[0] }}">
+                                <button type="submit" class="button is-success is-small font-weight-bold" data-i18n="admin_req_notify_btn">
+                                    Mark Trained & Send Email Notification
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="has-text-grey-light font-weight-bold" style="font-style: italic;">Completed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="has-text-centered py-5 has-text-grey" data-i18n="admin_req_empty">
+                            No pending training requests.
                         </td>
                     </tr>
                     {% endfor %}

@@ -1,6 +1,40 @@
-.env
-.venv/
+# Python caches
 __pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.venv/
+.venv1/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Secrets and backups
+.env
+.env.bak
+*.bak
+
+# Databases
 *.db
+*.sqlite3
+
+# Application-specific folders
 reports/
+static/reports/
+transcripts.json
+
+# IDE / Editor configurations
 .idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db

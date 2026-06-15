@@ -14,7 +14,12 @@ from audit_storage_db import (
     update_user_password,
     get_user_by_api_key,
     get_api_key_by_username,
-    reset_database
+    reset_database,
+    create_training_request,
+    get_training_requests,
+    get_user_training_requests,
+    update_training_request_status,
+    get_training_request_by_id
 )
 
 # Tests
@@ -118,6 +123,8 @@ def login():
             return redirect(next_url)
         else:
             error = "Invalid username or password"
+
+
             
     return render_template("login.html", error=error, next=next_url)
 
@@ -204,19 +211,26 @@ def dashboard():
 def complaints():
 
     if request.method == "POST":
-        model_name = request.form["model_name"]
-        issue = request.form["issue"]
-        severity = request.form["severity"]
+        model_name = request.form.get("model_name")
+        issue = request.form.get("issue")
+        severity = request.form.get("severity")
 
-        save_complaint(model_name, issue, severity)
-
-        return redirect(url_for("complaints"))
+        if model_name and issue:
+            save_complaint(model_name, issue, severity)
+            return redirect(url_for("complaints"))
 
     data = get_complaints()
+    training_reqs = get_training_requests()
+    
+    success = request.args.get("success")
+    error = request.args.get("error")
 
     return render_template(
         "complaints.html",
-        complaints=data
+        complaints=data,
+        training_requests=training_reqs,
+        success=success,
+        error=error
     )
 
 
@@ -354,7 +368,17 @@ COURSES_LAB_DATA = {
 @login_required
 def academy():
     api_key = get_api_key_by_username(session.get("user"))
-    return render_template("academy.html", courses=COURSES_LAB_DATA, api_key=api_key)
+    user_requests = get_user_training_requests(session.get("user"))
+    success = request.args.get("success")
+    error = request.args.get("error")
+    return render_template(
+        "academy.html",
+        courses=COURSES_LAB_DATA,
+        api_key=api_key,
+        user_requests=user_requests,
+        success=success,
+        error=error
+    )
 
 @app.route("/academy/run-lab", methods=["POST"])
 @login_required
@@ -391,12 +415,18 @@ def academy_run_lab():
     }
     
     api_key = get_api_key_by_username(session.get("user"))
+    user_requests = get_user_training_requests(session.get("user"))
+    success = request.args.get("success")
+    error = request.args.get("error")
     return render_template(
         "academy.html",
         courses=COURSES_LAB_DATA,
         selected_course_id=course_id,
         lab_result=lab_result,
-        api_key=api_key
+        api_key=api_key,
+        user_requests=user_requests,
+        success=success,
+        error=error
     )
 
 
@@ -460,6 +490,42 @@ def api_audit():
         },
         "report_download_url": f"{base_url}/{report_file}"
     })
+
+
+# =========================
+# EXPERT ASSISTANCE WORKFLOW ROUTES
+# =========================
+@app.route("/request-training", methods=["POST"])
+@login_required
+def request_training():
+    model_name = request.form.get("model_name")
+    issue_description = request.form.get("issue_description")
+    contact_email = request.form.get("contact_email")
+    
+    if not model_name or not issue_description or not contact_email:
+        return redirect(url_for("academy", error="Please fill out all fields before requesting training."))
+        
+    create_training_request(session["user"], model_name, issue_description, contact_email)
+    return redirect(url_for("academy", success="Training request submitted successfully! Awaiting payment verification."))
+
+
+@app.route("/admin/complete-training/<int:request_id>", methods=["POST"])
+@admin_required
+def complete_training(request_id):
+    req_data = get_training_request_by_id(request_id)
+    if not req_data:
+        return redirect(url_for("complaints", error="Training request not found."))
+        
+    update_training_request_status(request_id, "TRAINED")
+    
+    username = req_data[1]
+    model_name = req_data[2]
+    contact_email = req_data[4]
+    
+    from email_notifier import send_notification_email
+    send_notification_email(contact_email, username, model_name)
+    
+    return redirect(url_for("complaints", success=f"Successfully completed training for '{model_name}'. Email notification sent to {contact_email}."))
 
 
 # =========================

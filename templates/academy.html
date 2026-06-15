@@ -139,6 +139,99 @@
         <p class="is-size-6 font-weight-bold" style="color: #485fc7;">📂 Select one of the course modules above to start your training scenario!</p>
     </div>
     {% endif %}
+
+    <!-- EXPERT TRAINING WORKFLOW SECTION -->
+    <div class="mt-6 pt-5" style="border-top: 1px solid #e5e7eb;">
+        {% if success %}
+        <div class="notification is-success is-light py-3 px-4 mb-5" style="border-radius: 8px; font-weight: 600;">
+            ✅ {{ success }}
+        </div>
+        {% endif %}
+        {% if error %}
+        <div class="notification is-danger is-light py-3 px-4 mb-5" style="border-radius: 8px; font-weight: 600;">
+            ⚠️ {{ error }}
+        </div>
+        {% endif %}
+
+        <div class="columns">
+            <!-- REQUEST FORM COLUMN -->
+            <div class="column is-7">
+                <div class="audit-card" style="border: 1px solid #e2e8f0; background: #ffffff;">
+                    <h2 class="title is-4 mb-4" data-i18n="academy_expert_title">🛠️ Malfunctioning Model? Get Expert Training!</h2>
+                    <p class="is-size-7 has-text-grey mb-4" data-i18n="academy_expert_desc">
+                        If you have tried your best using the academy sessions to train your model and it is still malfunctioning, you can submit it to the platform expert for personalized training. The expert will optimize, patch, and notify you via email when it's ready. *Payment verification required.*
+                    </p>
+                    
+                    <form method="POST" action="/request-training">
+                        <div class="field">
+                            <label class="label is-size-7" data-i18n="academy_expert_model">Model Name</label>
+                            <div class="control">
+                                <input class="input is-small" type="text" name="model_name" placeholder="e.g. custom-gpt-agent" required>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label is-size-7" data-i18n="academy_expert_issue">Describe the Malfunction / Issue</label>
+                            <div class="control">
+                                <textarea class="textarea is-small" name="issue_description" rows="3" placeholder="Describe the safety breach or malfunction..." required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label is-size-7" data-i18n="academy_expert_email">Your Contact Email (for notification)</label>
+                            <div class="control">
+                                <input class="input is-small" type="email" name="contact_email" placeholder="email@example.com" required>
+                            </div>
+                        </div>
+
+                        <div class="control mt-5">
+                            <button class="button is-link is-fullwidth btn-login-styled" type="submit" data-i18n="academy_expert_submit" style="font-weight: 700;">
+                                Request Expert Training & Verify Payment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- REQUEST STATUS COLUMN -->
+            <div class="column is-5">
+                <div class="audit-card" style="border: 1px solid #e2e8f0; background: #ffffff; height: 100%; display: flex; flex-direction: column;">
+                    <h2 class="title is-5 mb-4" data-i18n="academy_req_history">📋 Your Expert Training Requests</h2>
+                    
+                    <div style="flex-grow: 1; overflow-y: auto; max-height: 300px;">
+                        <table class="table is-fullwidth is-striped is-hoverable is-narrow is-size-7">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="academy_req_model">Model Name</th>
+                                    <th class="has-text-right" data-i18n="academy_req_status">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for req in user_requests %}
+                                <tr>
+                                    <td class="is-vcentered font-weight-bold">{{ req[2] }}</td>
+                                    <td class="is-vcentered has-text-right">
+                                        {% if req[5] == 'PENDING' %}
+                                            <span class="tag is-warning is-light font-weight-bold">PENDING</span>
+                                        {% else %}
+                                            <span class="tag is-success is-light font-weight-bold">TRAINED</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="2" class="has-text-centered py-5 has-text-grey">
+                                        No expert requests submitted yet.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- INLINE EXTRA CSS FOR INTERACTIVE CARD ACTIVE STATUS -->

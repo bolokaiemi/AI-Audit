@@ -5,15 +5,15 @@
     <!-- BREADCRUMBS / NAVIGATION LINK -->
     <div class="mb-5">
         <a href="/compare" class="button is-light is-small">
-            <span>← Back to Model Comparison</span>
+            <span data-i18n="hist_back_btn">← Back to Model Comparison</span>
         </a>
     </div>
 
     <!-- HEADER BLOCK -->
     <div class="columns is-vcentered mb-6">
         <div class="column">
-            <h1 class="title is-2">📈 {{ model_name }} Performance History</h1>
-            <p class="subtitle is-5">Historical audit logs, quality scores, and reports for this model.</p>
+            <h1 class="title is-2">📈 {{ model_name }} <span data-i18n="hist_title_suffix">Performance History</span></h1>
+            <p class="subtitle is-5" data-i18n="hist_subtitle">Historical audit logs, quality scores, and reports for this model.</p>
         </div>
     </div>
 
@@ -21,13 +21,13 @@
     <div class="columns mb-6">
         <div class="column">
             <div class="audit-card has-text-centered py-5">
-                <p class="heading has-text-grey font-weight-bold">Total Audits</p>
+                <p class="heading has-text-grey font-weight-bold" data-i18n="hist_total_audits">Total Audits</p>
                 <p class="title is-2 font-weight-bold" style="color: #2c3e50;">{{ stats.total }}</p>
             </div>
         </div>
         <div class="column">
             <div class="audit-card has-text-centered py-5">
-                <p class="heading has-text-grey font-weight-bold">Average Score</p>
+                <p class="heading has-text-grey font-weight-bold" data-i18n="hist_avg_score">Average Score</p>
                 <p class="title is-2 font-weight-bold" style="color: {% if stats.avg_score >= 90 %}#23d160{% elif stats.avg_score >= 70 %}#d1a100{% else %}#ff3860{% endif %};">
                     {{ stats.avg_score }}%
                 </p>
@@ -35,7 +35,7 @@
         </div>
         <div class="column">
             <div class="audit-card has-text-centered py-5">
-                <p class="heading has-text-grey font-weight-bold">Passing Rate</p>
+                <p class="heading has-text-grey font-weight-bold" data-i18n="hist_pass_rate">Passing Rate</p>
                 <p class="title is-2 font-weight-bold" style="color: {% if stats.pass_rate >= 90 %}#23d160{% elif stats.pass_rate >= 70 %}#d1a100{% else %}#ff3860{% endif %};">
                     {{ stats.pass_rate }}%
                 </p>
@@ -45,19 +45,19 @@
 
     <!-- AUDITS LOG LIST -->
     <div class="audit-card">
-        <h2 class="title is-4 mb-4">📋 Historic Evaluation Runs</h2>
+        <h2 class="title is-4 mb-4" data-i18n="hist_eval_runs">📋 Historic Evaluation Runs</h2>
         <div class="table-container">
             <table class="table is-fullwidth is-striped is-hoverable">
                 <thead>
                     <tr>
-                        <th class="has-text-grey-dark">ID</th>
-                        <th class="has-text-centered has-text-grey-dark">Language Score</th>
-                        <th class="has-text-centered has-text-grey-dark">Instruction Score</th>
-                        <th class="has-text-centered has-text-grey-dark">Boundary Score</th>
-                        <th class="has-text-centered has-text-grey-dark">Overall Score</th>
-                        <th class="has-text-centered has-text-grey-dark">Status</th>
-                        <th class="has-text-centered has-text-grey-dark">Actions</th>
-                        <th class="has-text-right has-text-grey-dark">Audited On</th>
+                        <th class="has-text-grey-dark" data-i18n="hist_id">ID</th>
+                        <th class="has-text-centered has-text-grey-dark" data-i18n="hist_lang_score">Language Score</th>
+                        <th class="has-text-centered has-text-grey-dark" data-i18n="hist_inst_score">Instruction Score</th>
+                        <th class="has-text-centered has-text-grey-dark" data-i18n="hist_bound_score">Boundary Score</th>
+                        <th class="has-text-centered has-text-grey-dark" data-i18n="hist_overall_score">Overall Score</th>
+                        <th class="has-text-centered has-text-grey-dark" data-i18n="hist_status">Status</th>
+                        <th class="has-text-centered has-text-grey-dark" data-i18n="hist_actions">Actions</th>
+                        <th class="has-text-right has-text-grey-dark" data-i18n="hist_audited_on">Audited On</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -74,23 +74,23 @@
                         </td>
                         <td class="is-vcentered has-text-centered">
                             {% if a[6] == 'PASS' %}
-                                <span class="status-pass" style="font-weight: 700;">PASS</span>
+                                <span class="status-pass" style="font-weight: 700;" data-i18n="comp_pass">PASS</span>
                             {% elif a[6] == 'WARNING' %}
-                                <span class="status-warning" style="font-weight: 700;">WARN</span>
+                                <span class="status-warning" style="font-weight: 700;" data-i18n="comp_warn">WARN</span>
                             {% else %}
-                                <span class="status-fail" style="font-weight: 700;">FAIL</span>
+                                <span class="status-fail" style="font-weight: 700;" data-i18n="comp_fail">FAIL</span>
                             {% endif %}
                         </td>
                         <td class="is-vcentered has-text-centered">
                             <a href="/reports/audit_{{ model_name }}.pdf" class="button is-link is-small" download>
-                                📥 PDF Report
+                                <span data-i18n="hist_pdf_report">📥 PDF Report</span>
                             </a>
                         </td>
                         <td class="is-vcentered has-text-right is-size-7 has-text-grey">{{ a[7][:16]|replace('T', ' ') }}</td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="8" class="has-text-centered py-6 has-text-grey">
+                        <td colspan="8" class="has-text-centered py-6 has-text-grey" data-i18n="hist_no_evals">
                             No evaluations performed for this model yet.
                         </td>
                     </tr>

@@ -4,21 +4,21 @@
 <div class="main-container">
     <div class="columns is-vcentered mb-6">
         <div class="column">
-            <h1 class="title is-2">🤖 Model Benchmark Comparison</h1>
-            <p class="subtitle is-5">Compare performance, scores, and evaluation history across different models.</p>
+            <h1 class="title is-2" data-i18n="comp_title">🤖 Model Benchmark Comparison</h1>
+            <p class="subtitle is-5" data-i18n="comp_subtitle">Compare performance, scores, and evaluation history across different models.</p>
         </div>
     </div>
 
     <!-- BENCHMARK LEADERBOARD CARD -->
     <div class="audit-card mb-6">
-        <h2 class="title is-4 mb-4">🏆 Leaderboard (Average Scores)</h2>
+        <h2 class="title is-4 mb-4" data-i18n="comp_leaderboard">🏆 Leaderboard (Average Scores)</h2>
         <div class="table-container">
             <table class="table is-fullwidth is-hoverable">
                 <thead>
                     <tr>
-                        <th class="has-text-grey-dark">Model Name</th>
-                        <th class="has-text-centered has-text-grey-dark">Average Score</th>
-                        <th class="has-text-centered has-text-grey-dark">Standing</th>
+                        <th class="has-text-grey-dark" data-i18n="comp_model_name">Model Name</th>
+                        <th class="has-text-centered has-text-grey-dark" data-i18n="comp_avg_score">Average Score</th>
+                        <th class="has-text-centered has-text-grey-dark" data-i18n="comp_standing">Standing</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,17 +36,17 @@
                         </td>
                         <td class="is-vcentered has-text-centered py-4">
                             {% if avg_score >= 90 %}
-                                <span class="tag is-success is-light" style="font-weight: 700;">EXCELLENT</span>
+                                <span class="tag is-success is-light" style="font-weight: 700;" data-i18n="comp_excellent">EXCELLENT</span>
                             {% elif avg_score >= 70 %}
-                                <span class="tag is-warning is-light" style="font-weight: 700; color: #363636;">STABLE</span>
+                                <span class="tag is-warning is-light" style="font-weight: 700; color: #363636;" data-i18n="comp_stable">STABLE</span>
                             {% else %}
-                                <span class="tag is-danger is-light" style="font-weight: 700;">NEEDS IMPROVEMENT</span>
+                                <span class="tag is-danger is-light" style="font-weight: 700;" data-i18n="comp_needs_improvement">NEEDS IMPROVEMENT</span>
                             {% endif %}
                         </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="3" class="has-text-centered py-6 has-text-grey">
+                        <td colspan="3" class="has-text-centered py-6 has-text-grey" data-i18n="comp_no_audits">
                             No audits performed yet. Start by running an audit from the Home page!
                         </td>
                     </tr>
@@ -58,19 +58,19 @@
 
     <!-- DETAILED AUDIT HISTORY -->
     <div class="audit-card">
-        <h2 class="title is-4 mb-4">📜 Detailed Audit Log</h2>
+        <h2 class="title is-4 mb-4" data-i18n="comp_detailed_log">📜 Detailed Audit Log</h2>
         <div class="table-container">
             <table class="table is-fullwidth is-striped is-hoverable">
                 <thead>
                     <tr>
-                        <th class="has-text-grey-dark">ID</th>
-                        <th class="has-text-grey-dark">Model</th>
-                        <th class="has-text-centered has-text-grey-dark">Lang Score</th>
-                        <th class="has-text-centered has-text-grey-dark">Inst Score</th>
-                        <th class="has-text-centered has-text-grey-dark">Bound Score</th>
-                        <th class="has-text-centered has-text-grey-dark">Overall</th>
-                        <th class="has-text-centered has-text-grey-dark">Status</th>
-                        <th class="has-text-right has-text-grey-dark">Audited On</th>
+                        <th class="has-text-grey-dark" data-i18n="comp_id">ID</th>
+                        <th class="has-text-grey-dark" data-i18n="comp_model">Model</th>
+                        <th class="has-text-centered has-text-grey-dark" data-i18n="comp_lang_score">Lang Score</th>
+                        <th class="has-text-centered has-text-grey-dark" data-i18n="comp_inst_score">Inst Score</th>
+                        <th class="has-text-centered has-text-grey-dark" data-i18n="comp_bound_score">Bound Score</th>
+                        <th class="has-text-centered has-text-grey-dark" data-i18n="comp_overall">Overall</th>
+                        <th class="has-text-centered has-text-grey-dark" data-i18n="comp_status">Status</th>
+                        <th class="has-text-right has-text-grey-dark" data-i18n="comp_audited_on">Audited On</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -92,18 +92,18 @@
                         </td>
                         <td class="is-vcentered has-text-centered">
                             {% if a[6] == 'PASS' %}
-                                <span class="status-pass" style="font-weight: 700;">PASS</span>
+                                <span class="status-pass" style="font-weight: 700;" data-i18n="comp_pass">PASS</span>
                             {% elif a[6] == 'WARNING' %}
-                                <span class="status-warning" style="font-weight: 700;">WARN</span>
+                                <span class="status-warning" style="font-weight: 700;" data-i18n="comp_warn">WARN</span>
                             {% else %}
-                                <span class="status-fail" style="font-weight: 700;">FAIL</span>
+                                <span class="status-fail" style="font-weight: 700;" data-i18n="comp_fail">FAIL</span>
                             {% endif %}
                         </td>
                         <td class="is-vcentered has-text-right is-size-7 has-text-grey">{{ a[7][:16]|replace('T', ' ') }}</td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="8" class="has-text-centered py-6 has-text-grey">
+                        <td colspan="8" class="has-text-centered py-6 has-text-grey" data-i18n="comp_no_runs">
                             No individual audits saved in the database.
                         </td>
                     </tr>
