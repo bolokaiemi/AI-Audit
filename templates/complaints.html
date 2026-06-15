@@ -69,6 +69,74 @@
         </div>
     </div>
 
+
+    <!-- MLOPS RETRAINING PIPELINE TRACKER -->
+    <style>
+        @keyframes pulse-blue {
+            0% { box-shadow: 0 0 0 0 rgba(32, 156, 238, 0.5); }
+            70% { box-shadow: 0 0 0 10px rgba(32, 156, 238, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(32, 156, 238, 0); }
+        }
+        .pulse-active {
+            animation: pulse-blue 2s infinite;
+        }
+    </style>
+    
+    <div class="audit-card mb-6" style="border: 1px solid #209cee; background: #fafcff; border-radius: 8px;">
+        <h2 class="title is-4 mb-4" style="color: #209cee; display: flex; align-items: center; gap: 8px;">
+            🤖 <span data-i18n="compl_mlops_pipeline">MLOps Retraining Pipeline</span>
+        </h2>
+        
+        <div class="columns is-vcentered">
+            <div class="column is-8">
+                {% set progress_percent = (complaints|length * 10) %}
+                {% if progress_percent > 100 %}
+                    {% set progress_percent = 100 %}
+                {% endif %}
+                <p class="mb-3">
+                    <strong data-i18n="compl_pipeline_progress">Pipeline Progress:</strong>
+                    {{ complaints|length }} / 10 <span data-i18n="compl_complaints_lbl">complaints logged</span>
+                </p>
+                <div class="premium-progress-container mb-3" style="background-color: #eef2f7; height: 16px; border-radius: 8px; overflow: hidden; border: 1px solid #dbeafe;">
+                    <div class="premium-progress-fill bg-gradient-blue" style="width: {{ progress_percent }}%; height: 100%; border-radius: 8px; transition: width 0.6s cubic-bezier(0.1, 0.8, 0.3, 1);"></div>
+                </div>
+                
+                {% set ns = namespace(training_models=[]) %}
+                {% for model, status in model_statuses.items() %}
+                    {% if status == 'TRAINING' %}
+                        {% set ns.training_models = ns.training_models + [model] %}
+                    {% endif %}
+                {% endfor %}
+                
+                {% if ns.training_models %}
+                <div class="notification is-info is-light py-2 px-3 mt-3 pulse-active" style="border-radius: 6px; border-left: 4px solid #209cee; background-color: #f0f8ff;">
+                    <p class="is-size-7" style="font-weight: 600; color: #1d3557;">
+                        ⚡ <span data-i18n="compl_training_alert">Active Training detected for model(s):</span> <strong>{{ ns.training_models|join(', ') }}</strong>.
+                        <br>
+                        <span data-i18n="compl_training_desc">Fine-tuning dataset has been compiled at reports/fine_tuning_dataset.jsonl.</span>
+                    </p>
+                </div>
+                {% else %}
+                <p class="is-size-7 has-text-grey" data-i18n="compl_pipeline_idle">Pipeline idle. Retraining triggers automatically at 10 complaints.</p>
+                {% endif %}
+            </div>
+            
+            <div class="column is-4">
+                {% if ns.training_models %}
+                <form method="POST" action="/admin/deploy-model">
+                    <button type="submit" class="button is-info is-fullwidth pulse-active" style="font-weight: 700;">
+                        🚀 <span data-i18n="compl_deploy_btn">Deploy & Complete Retraining</span>
+                    </button>
+                </form>
+                {% else %}
+                <button class="button is-light is-fullwidth" disabled style="font-weight: 700; border-color: #e6e6e6; color: #b5b5b5;">
+                    🔒 <span data-i18n="compl_deploy_btn_disabled">Pipeline Ready</span>
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
     <!-- COMPLAINTS LOG TABLE -->
     <div class="audit-card">
         <h2 class="title is-4 mb-4" data-i18n="compl_logged_title">📜 Logged Model Complaints</h2>

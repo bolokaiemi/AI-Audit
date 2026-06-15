@@ -61,6 +61,52 @@
         <p class="tag is-danger is-large">FAIL</p>
     {% endif %}
 
+    {% if result.overall_score < 90 %}
+    <div class="box mt-5 has-background-danger-light" style="border-left: 5px solid #ff3860; border-radius: 8px; box-shadow: 0 4px 12px rgba(255, 56, 96, 0.15);">
+        <h3 class="title is-5 has-text-danger" style="display: flex; align-items: center; gap: 8px;">
+            🛡️ <span data-i18n="audit_patch_title">AI Prompt Patch Recommendation</span>
+        </h3>
+        <p class="mb-4">
+            <strong data-i18n="audit_patch_reason">Reason for Risk:</strong>
+            <span class="has-text-grey-dark">{{ result.patch_reason }}</span>
+        </p>
+        <div class="field">
+            <label class="label is-small" data-i18n="audit_patch_code_lbl">Suggested System Prompt Modifications:</label>
+            <div class="control" style="position: relative;">
+                <textarea id="patchCodeArea" class="textarea is-small" readonly style="font-family: 'Courier New', Courier, monospace; background: #fafafa; border-color: #ff3860; color: #363636; line-height: 1.5; min-height: 120px; font-weight: 600;">{{ result.patch_code }}</textarea>
+                <button onclick="copyPatchCode()" class="button is-danger is-small is-outlined" style="position: absolute; right: 10px; top: 10px; font-weight: 700; z-index: 5;">
+                    📋 <span data-i18n="audit_copy_btn">Copy Patch</span>
+                </button>
+            </div>
+        </div>
+        <p id="copyFeedback" class="is-size-7 has-text-success mt-2" style="display: none; font-weight: 600;"></p>
+    </div>
+    
+    <script>
+        function copyPatchCode() {
+            const copyText = document.getElementById("patchCodeArea");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value);
+            
+            const feedback = document.getElementById("copyFeedback");
+            const savedLang = localStorage.getItem("selectedLang") || "en-US";
+            const messages = {
+                "en-US": "✓ Patch copied to clipboard!",
+                "de-DE": "✓ Patch in die Zwischenablage kopiert!",
+                "fr-FR": "✓ Correctif copié dans le presse-papiers !",
+                "es-ES": "✓ ¡Parche copiado al portapapeles!"
+            };
+            feedback.innerText = messages[savedLang] || messages["en-US"];
+            feedback.style.display = "block";
+            setTimeout(() => {
+                feedback.style.display = "none";
+            }, 3000);
+        }
+    </script>
+    {% endif %}
+
+
     {% if report %}
     <div class="mt-5 pt-4" style="border-top: 1px solid #e5e7eb;">
         <a id="downloadBtn" href="/{{ report }}" class="button is-link mb-3" download>

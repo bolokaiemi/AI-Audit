@@ -35,12 +35,16 @@
                             </span>
                         </td>
                         <td class="is-vcentered has-text-centered py-4">
-                            {% if avg_score >= 90 %}
-                                <span class="tag is-success is-light" style="font-weight: 700;" data-i18n="comp_excellent">EXCELLENT</span>
-                            {% elif avg_score >= 70 %}
-                                <span class="tag is-warning is-light" style="font-weight: 700; color: #363636;" data-i18n="comp_stable">STABLE</span>
+                            {% if model_statuses.get(model) == 'TRAINING' %}
+                                <span class="tag is-info font-weight-bold" style="background-color: #209cee; color: #fff; box-shadow: 0 0 6px #209cee; font-weight: 700;" data-i18n="model_training">TRAINING</span>
                             {% else %}
-                                <span class="tag is-danger is-light" style="font-weight: 700;" data-i18n="comp_needs_improvement">NEEDS IMPROVEMENT</span>
+                                {% if avg_score >= 90 %}
+                                    <span class="tag is-success is-light" style="font-weight: 700;" data-i18n="comp_excellent">EXCELLENT</span>
+                                {% elif avg_score >= 70 %}
+                                    <span class="tag is-warning is-light" style="font-weight: 700; color: #363636;" data-i18n="comp_stable">STABLE</span>
+                                {% else %}
+                                    <span class="tag is-danger is-light" style="font-weight: 700;" data-i18n="comp_needs_improvement">NEEDS IMPROVEMENT</span>
+                                {% endif %}
                             {% endif %}
                         </td>
                     </tr>

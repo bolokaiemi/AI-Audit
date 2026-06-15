@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, send_file, session, jsonify
 import os
+import json
+import sqlite3
 from dotenv import load_dotenv
 # Database
 from audit_storage_db import (
@@ -64,12 +66,74 @@ if TESTER_USERNAME and TESTER_PASSWORD:
 # =========================================
 # GLOBAL TEMPLATE CONTEXT PROCESSORS
 # =========================================
+def get_model_statuses():
+    status_file = os.path.join("reports", "training_status.json")
+    if os.path.exists(status_file):
+        try:
+            with open(status_file, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
+
+def set_model_status(model_name, status):
+    status_file = os.path.join("reports", "training_status.json")
+    os.makedirs(os.path.dirname(status_file), exist_ok=True)
+    statuses = get_model_statuses()
+    statuses[model_name] = status
+    with open(status_file, "w", encoding="utf-8") as f:
+        json.dump(statuses, f)
+
+def clear_all_model_statuses():
+    status_file = os.path.join("reports", "training_status.json")
+    if os.path.exists(status_file):
+        try:
+            os.remove(status_file)
+        except Exception:
+            pass
+
+def trigger_mlops_retraining(model_name):
+    set_model_status(model_name, "TRAINING")
+    db_path = "audit.db"
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    cur.execute("SELECT model_name, issue, severity FROM complaints")
+    rows = cur.fetchall()
+    conn.close()
+    
+    os.makedirs("reports", exist_ok=True)
+    dataset_path = os.path.join("reports", "fine_tuning_dataset.jsonl")
+    
+    with open(dataset_path, "w", encoding="utf-8") as f:
+        for r in rows:
+            comp_model = r[0]
+            comp_issue = r[1]
+            comp_sev = r[2]
+            line = {
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": f"You are a safe assistant. Retraining alignment for model {comp_model} to mitigate safety risks."
+                      },
+                    {
+                        "role": "user",
+                        "content": f"Address the following reported issue: {comp_issue} (Severity: {comp_sev})"
+                      },
+                    {
+                        "role": "assistant",
+                        "content": "I acknowledge this issue. I will adhere strictly to linguistic guidelines, formatting constraints, and safety boundaries to prevent this malfunction."
+                      }
+                  ]
+              }
+            f.write(json.dumps(line, ensure_ascii=False) + "\n")
+    print(f"[MLOps Pipeline] Fine-tuning dataset exported successfully for model: {model_name}")
+
 @app.context_processor
 def inject_api_key():
     if 'user' in session:
         api_key = get_api_key_by_username(session['user'])
-        return dict(user_api_key=api_key)
-    return dict(user_api_key=None)
+        return dict(user_api_key=api_key, model_statuses=get_model_statuses())
+    return dict(user_api_key=None, model_statuses=get_model_statuses())
 
 
 # =========================
@@ -259,6 +323,23 @@ def audit():
     else:
         status = "FAIL"
 
+    # Compile prompt patch recommendation details if score < 90
+    patch_reasons = []
+    patch_codes = []
+    
+    if lang["score"] < 90 and lang.get("patch"):
+        patch_reasons.append(f"Linguistic: {lang.get('reason')}")
+        patch_codes.append(lang.get("patch"))
+    if inst["score"] < 90 and inst.get("patch"):
+        patch_reasons.append(f"Instruction Adherence: {inst.get('reason')}")
+        patch_codes.append(inst.get("patch"))
+    if bound["score"] < 90 and bound.get("patch"):
+        patch_reasons.append(f"Boundary Enforcement: {bound.get('reason')}")
+        patch_codes.append(bound.get("patch"))
+
+    patch_reason = " | ".join(patch_reasons) if patch_reasons else None
+    patch_code = "\n\n# =========================================\n# PATCH:\n# =========================================\n".join(patch_codes) if patch_codes else None
+
     # Audit object
     audit_data = {
         "model_name": model_name,
@@ -266,7 +347,9 @@ def audit():
         "instruction_score": inst["score"],
         "boundary_score": bound["score"],
         "overall_score": overall,
-        "status": status
+        "status": status,
+        "patch_reason": patch_reason,
+        "patch_code": patch_code
     }
 
     # Save audit to DB
@@ -280,6 +363,7 @@ def audit():
         result=audit_data,
         report=report_file
     )
+
 
 
 # =========================
@@ -316,6 +400,12 @@ def complaints():
 
         if model_name and issue:
             save_complaint(model_name, issue, severity)
+            
+            # If total complaints in database reaches 10, trigger pipeline
+            all_complaints = get_complaints()
+            if len(all_complaints) >= 10:
+                trigger_mlops_retraining(model_name)
+                
             return redirect(url_for("complaints"))
 
     data = get_complaints()
@@ -422,6 +512,16 @@ def download_all_reports():
 @admin_required
 def admin_reset():
     reset_database()
+    clear_all_model_statuses()
+    
+    # Clear fine-tuning dataset file
+    dataset_path = os.path.join("reports", "fine_tuning_dataset.jsonl")
+    if os.path.exists(dataset_path):
+        try:
+            os.remove(dataset_path)
+        except Exception:
+            pass
+            
     reports_dir = "reports"
     if os.path.exists(reports_dir):
         for file in os.listdir(reports_dir):
@@ -431,6 +531,21 @@ def admin_reset():
                 except Exception:
                     pass
     return redirect(url_for("complaints"))
+
+@app.route("/admin/deploy-model", methods=["POST"])
+@admin_required
+def deploy_model():
+    statuses = get_model_statuses()
+    deployed_models = []
+    for model, status in statuses.items():
+        if status == "TRAINING":
+            deployed_models.append(model)
+            
+    for model in deployed_models:
+        set_model_status(model, "STABLE")
+        
+    success_msg = f"Successfully deployed retrained model(s): {', '.join(deployed_models)}." if deployed_models else "No models undergoing retraining."
+    return redirect(url_for("complaints", success=success_msg))
 
 
 # =========================
