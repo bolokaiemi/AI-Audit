@@ -21,23 +21,9 @@ python app.py
 ```
 Then, open [http://localhost:5000](http://localhost:5000) in your web browser.
 
----
 
-## 🗝️ Testing Credentials
 
-To facilitate testing the web application locally or online, use the following pre-provisioned credentials:
 
-### 1. Platform Administrator (Admin Role)
-- **Username**: `admin`
-- **Password**: `admin123`
-- **Permissions**: Full access to the **Complaints & Admin** center, where you can submit model issues, download all audit reports compiled into a single ZIP file, and perform a total data reset (purge all audit/complaint logs and delete PDF files).
-
-### 2. Standard Tester (User Role)
-- **Username**: `tester`
-- **Password**: `tester123`
-- **Permissions**: Access to the core features including running transcript audits, viewing the analytics **Dashboard**, inspecting **Model Benchmark Comparison** leaderboards, and running curriculum courses.
-
----
 
 ## 🎓 Auditing Academy (Curriculum Labs)
 
