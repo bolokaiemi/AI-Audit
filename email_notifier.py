@@ -25,7 +25,7 @@ Great news! The AI model '{model_name}' that you submitted for expert training h
 
 The safety breaches and instruction malfunctions have been successfully resolved. Your model is now fully optimized and ready for auditing!
 
-Log in to your AI Auditor platform to run an interactive audit on your new model.
+Log in to your AI Audit platform to run an interactive audit on your new model.
 
 Best regards,
 The AI Auditor Support Team

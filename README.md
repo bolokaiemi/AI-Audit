@@ -1,6 +1,6 @@
-# AI Auditor Platform ⚡
+# AI Audit Platform ⚡
 
-AI Auditor is a premium web platform designed to evaluate and run audits on AI language model transcripts, analyzing performance across three crucial metrics: **Language safety**, **Instruction-following**, and **Boundary violation (Prompt Injections)**.
+AI Audit is a premium web platform designed to evaluate and run audits on AI language model transcripts, analyzing performance across three crucial metrics: **Language safety**, **Instruction-following**, and **Boundary violation (Prompt Injections)**.
 
 The platform is designed to allow developers and companies to test models independently, review benchmarks, train on interactive sandbox safety labs, or interact programmatically via a secured REST API.
 
