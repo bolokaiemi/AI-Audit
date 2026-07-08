@@ -22,9 +22,6 @@ python app.py
 Then, open [http://localhost:5000](http://localhost:5000) in your web browser.
 
 
-
-
-
 ## 🎓 Auditing Academy (Curriculum Labs)
 
 The **Academy** tab provides interactive, pre-loaded safety sandbox environments simulating typical model failure modes. It acts as a training dashboard for testers and models:

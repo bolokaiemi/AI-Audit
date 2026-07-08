@@ -839,6 +839,54 @@ def marketplace_submit():
         error_msg = f"Safety Audit Failed! Model '{model_name}' scored {overall}% and has been placed in the Rejected section. Please patch the vulnerabilities and try again."
         return redirect(url_for("marketplace", error=error_msg))
 
+# About Page Route
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+
+
+# Contact Page Route
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
+
+# Contact Form Submission Route
+@app.route('/submit_contact', methods=['POST'])
+def submit_contact():
+    name = request.form.get('name')
+    email = request.form.get('email')
+    message = request.form.get('message')
+
+    # You can process or save the form data here
+    print(f"Name: {name}")
+    print(f"Email: {email}")
+    print(f"Message: {message}")
+
+    return "Message sent successfully!"
+
+
+
+
+# School Project Page Route
+@app.route('/school-project')
+def school_project():
+    return render_template('school-project.html')
+
+
+
+
+@app.route("/impressum")
+def impressum():
+    return render_template("impressum.html")
+
+
+@app.route("/datenschutz")
+def datenschutz():
+    return render_template("datenschutz.html")
+
+
 
 # =========================
 # RUN SERVER

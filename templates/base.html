@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>AI Auditor</title>
+    <title>AI Audit</title>
 
     <!-- ✅ Bulma CSS CDN -->
 
@@ -11,6 +11,8 @@
 
 <link rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='impressdaten.css') }}">
 </head>
 
 
@@ -20,7 +22,7 @@
     <div class="container">
         <div class="navbar-brand">
             <a class="navbar-item px-4" href="/" style="font-weight: 800; letter-spacing: 0.5px;">
-                <span class="has-text-link mr-1">⚡</span> AI AUDITOR
+                <span class="has-text-link mr-1">⚡</span> AI AUDIT
             </a>
             
             <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu">
@@ -126,9 +128,15 @@
      6. EXTRA CONTENT BLOCKS
 ========================= -->
 {% block report_content %}{% endblock %}
+    {% block about_content %}{% endblock %}
     {% block dashboard_content %}{% endblock %}
      {% block complaints_content %}{% endblock %}
+    {% block impressum_content %}{% endblock %}
+{% block datenschutz_content %}{% endblock %}
 
+        {% block contact_content %}{% endblock %}
+{% block school_project_content %}{% endblock %}
+{% block home_content %}{% endblock %}
 </section>
 
 </section>
@@ -140,7 +148,7 @@
     <div id="chatTooltip" class="chat-tooltip">
         Need help auditing or troubleshooting? Click me! ⚡
     </div>
-    <button id="chatFab" class="chat-fab" onclick="toggleChatPanel();" title="AI Auditor Assistant">
+    <button id="chatFab" class="chat-fab" onclick="toggleChatPanel();" title="AI Audit Assistant">
         💬
     </button>
 </div>
@@ -150,7 +158,7 @@
     <div class="chat-header">
         <div class="chat-header-title">
             <span class="chat-status-dot"></span>
-            <span>AI Auditor Assistant</span>
+            <span>AI Audit Assistant</span>
         </div>
         <div style="display: flex; align-items: center; gap: 8px;">
             <select id="chatLangSelect" class="chat-lang-select" onchange="changeChatLanguage();">
@@ -195,7 +203,7 @@
     // Multilingual Dictionary
     const MULTILINGUAL_DICTIONARY = {
         "en-US": {
-            "welcome": "Hello! I am your AI Auditor assistant. Ask me questions about lab instructions, vulnerability ideas (Prompt Injections, JSON format, multilingual leaks), or troubleshooting help!",
+            "welcome": "Hello! I am your AI Audit assistant. Ask me questions about lab instructions, vulnerability ideas (Prompt Injections, JSON format, multilingual leaks), or troubleshooting help!",
             "placeholder": "Type a message...",
             "lab1": "<strong>Course 1</strong> explores Prompt Injections. Flawed models break boundaries when instructed to ignore system rules. <br><br><strong>Tip:</strong> Try instructing the model to <em>'Ignore previous instructions...'</em> to verify boundary breaches!",
             "lab2": "<strong>Course 2</strong> tests Instruction-following (strict JSON outputs). <br><br><strong>Tip:</strong> If the model outputs chatty text before the JSON (like <em>'Sure, here is your JSON...'</em>), it fails. <br><br><strong>Mitigation:</strong> Set temperature to 0.0 or define schema bounds at the gateway.",
@@ -211,7 +219,7 @@
             ]
         },
         "de-DE": {
-            "welcome": "Hallo! Ich bin Ihr KI-Auditor-Assistent. Stellen Sie mir Fragen zu Laboranweisungen, Sicherheitslücken (Prompt-Injections, JSON-Format, mehrsprachige Lecks) oder technischer Hilfe!",
+            "welcome": "Hallo! Ich bin Ihr KI-Audit-Assistent. Stellen Sie mir Fragen zu Laboranweisungen, Sicherheitslücken (Prompt-Injections, JSON-Format, mehrsprachige Lecks) oder technischer Hilfe!",
             "placeholder": "Nachricht eingeben...",
             "lab1": "<strong>Kurs 1</strong> untersucht Prompt-Injections. Fehlerhafte Modelle verletzen Sicherheitsgrenzen, wenn sie angewiesen werden, Systemregeln zu ignorieren. <br><br><strong>Tipp:</strong> Versuchen Sie, das Modell anzuweisen: <em>'Ignoriere vorherige Anweisungen...'</em>, um Sicherheitslecks zu prüfen!",
             "lab2": "<strong>Kurs 2</strong> testet das Befolgen von Anweisungen (strenge JSON-Ausgabe). <br><br><strong>Tipp:</strong> Wenn das Modell vor dem JSON Text ausgibt (wie <em>'Hier ist Ihr JSON...'</em>), schlägt der Test fehl. <br><br><strong>Lösung:</strong> Setzen Sie die Temperatur auf 0.0 oder erzwingen Sie ein JSON-Schema.",
@@ -227,7 +235,7 @@
             ]
         },
         "fr-FR": {
-            "welcome": "Bonjour ! Je suis votre assistant IA Auditor. Posez-moi des questions sur les instructions des TP, les failles (injections de prompt, format JSON, failles multilingues) ou l'aide technique !",
+            "welcome": "Bonjour ! Je suis votre assistant IA Audit. Posez-moi des questions sur les instructions des TP, les failles (injections de prompt, format JSON, failles multilingues) ou l'aide technique !",
             "placeholder": "Tapez un message...",
             "lab1": "<strong>Cours 1</strong> explore les injections de prompt. Les modèles défectueux prennent des libertés lorsque l'utilisateur leur demande d'ignorer les règles système. <br><br><strong>Conseil :</strong> Essayez de dire : <em>'Ignorez les instructions précédentes...'</em> pour vérifier les failles de sécurité !",
             "lab2": "<strong>Cours 2</strong> teste le respect des instructions (sorties JSON strictes). <br><br><strong>Conseil :</strong> Si le modèle affiche du texte avant le JSON (comme <em>'Voici votre JSON...'</em>), le test échoue. <br><br><strong>Solution :</strong> Réglez la température sur 0.0 ou imposez un schéma JSON.",
@@ -243,7 +251,7 @@
             ]
         },
         "es-ES": {
-            "welcome": "¡Hola! Soy tu asistente de IA Auditor. ¡Hazme preguntas sobre las instrucciones de los laboratorios, fallos de seguridad (inyecciones de prompt, formato JSON, fugas multilingües) o soporte técnico!",
+            "welcome": "¡Hola! Soy tu asistente de IA Audit. ¡Hazme preguntas sobre las instrucciones de los laboratorios, fallos de seguridad (inyecciones de prompt, formato JSON, fugas multilingües) o soporte técnico!",
             "placeholder": "Escribe un mensaje...",
             "lab1": "El <strong>Curso 1</strong> explora las inyecciones de prompt. Los modelos defectuosos violan los límites si se les ordena ignorar las reglas del sistema. <br><br><strong>Consejo:</strong> Intente decir: <em>'Ignore las instrucciones anteriores...'</em> para comprobar las brechas de seguridad.",
             "lab2": "El <strong>Curso 2</strong> evalúa el cumplimiento de formatos (salidas JSON estrictas). <br><br><strong>Consejo:</strong> Si el modelo muestra texto conversacional antes del JSON (como <em>'Aquí está su JSON...'</em>), falla. <br><br><strong>Mitigación:</strong> Ajuste la temperatura a 0.0 o imponga un esquema JSON.",
@@ -266,7 +274,7 @@
         const dicts = {
             "en-US": {
                 "home": {
-                    "welcome": "Welcome to **AI Auditor**! You can test safety transcripts here to grade boundaries, formats, and language metrics. Try pasting a prompt injection in the sandbox above!",
+                    "welcome": "Welcome to **AI Audit**! You can test safety transcripts here to grade boundaries, formats, and language metrics. Try pasting a prompt injection in the sandbox above!",
                     "chips": ["🎯 Course 1 Lab", "📊 Course 2 JSON", "🌍 Course 3 Multilingual", "🔑 REST API Token"]
                 },
                 "dashboard": {
@@ -286,13 +294,13 @@
                     "chips": ["🔐 Reset DB & Reports", "📊 View Analytics", "🔑 REST API Access", "🎯 Run Academy Lab"]
                 },
                 "default": {
-                    "welcome": "Hello! I am your AI Auditor assistant. Ask me questions about lab instructions, vulnerability ideas, or troubleshooting help!",
+                    "welcome": "Hello! I am your AI Audit assistant. Ask me questions about lab instructions, vulnerability ideas, or troubleshooting help!",
                     "chips": ["🎯 Course 1 Lab", "📊 Course 2 JSON", "🌍 Course 3 Multilingual", "🔑 REST API Key"]
                 }
             },
             "de-DE": {
                 "home": {
-                    "welcome": "Willkommen bei **AI Auditor**! Sie können hier Sicherheits-Transkripte testen, um Grenzen, Formate und Sprachmetriken zu bewerten. Versuchen Sie eine Prompt-Injection oben!",
+                    "welcome": "Willkommen bei **AI Audit**! Sie können hier Sicherheits-Transkripte testen, um Grenzen, Formate und Sprachmetriken zu bewerten. Versuchen Sie eine Prompt-Injection oben!",
                     "chips": ["🎯 Kurs 1 Labor", "📊 Kurs 2 JSON", "🌍 Kurs 3 Übersetzung", "🔑 REST-API Token"]
                 },
                 "dashboard": {
@@ -312,13 +320,13 @@
                     "chips": ["🔐 Datenbank zurücksetzen", "📊 Analysen anzeigen", "🔑 REST-API Zugang", "🎯 Akademie starten"]
                 },
                 "default": {
-                    "welcome": "Hallo! Ich bin Ihr KI-Auditor-Assistent. Stellen Sie mir Fragen zu Laboranweisungen, Sicherheitslücken oder technischer Hilfe!",
+                    "welcome": "Hallo! Ich bin Ihr KI-Audit-Assistent. Stellen Sie mir Fragen zu Laboranweisungen, Sicherheitslücken oder technischer Hilfe!",
                     "chips": ["🎯 Kurs 1 Labor", "📊 Kurs 2 JSON", "🌍 Kurs 3 Übersetzung", "🔑 REST-API Zugang"]
                 }
             },
             "fr-FR": {
                 "home": {
-                    "welcome": "Bienvenue sur **AI Auditor** ! Vous pouvez tester ici les transcriptions de sécurité pour évaluer les limites, les formats et les langues. Essayez d'insérer une injection de prompt !",
+                    "welcome": "Bienvenue sur **AI Audit** ! Vous pouvez tester ici les transcriptions de sécurité pour évaluer les limites, les formats et les langues. Essayez d'insérer une injection de prompt !",
                     "chips": ["🎯 Cours 1 TP", "📊 Cours 2 JSON", "🌍 Cours 3 Multilingue", "🔑 Jeton API REST"]
                 },
                 "dashboard": {
@@ -338,17 +346,17 @@
                     "chips": ["🔐 Réinitialiser BD & Rapports", "📊 Voir Analytics", "🔑 Accès API REST", "🎯 Lancer l'Académie"]
                 },
                 "default": {
-                    "welcome": "Bonjour ! Je suis votre assistant IA Auditor. Posez-moi des questions sur les instructions de TP, les failles ou l'aide technique !",
+                    "welcome": "Bonjour ! Je suis votre assistant IA Audit. Posez-moi des questions sur les instructions de TP, les failles ou l'aide technique !",
                     "chips": ["🎯 Cours 1 TP", "📊 Cours 2 JSON", "🌍 Cours 3 Multilingue", "🔑 Clé API REST"]
                 }
             },
             "es-ES": {
                 "home": {
-                    "welcome": "¡Bienvenido a **AI Auditor**! Aquí puede evaluar transcripciones de seguridad para calificar límites, formatos y métricas de idiomas.",
+                    "welcome": "¡Bienvenido a **AI Audit**! Aquí puede evaluar transcripciones de seguridad para calificar límites, formatos y métricas de idiomas.",
                     "chips": ["🎯 Curso 1 Lab", "📊 Curso 2 JSON", "🌍 Curso 3 Multilingüe", "🔑 Token API REST"]
                 },
                 "dashboard": {
-                    "welcome": "¡Se encuentra en el **Tablero de Auditoría**! Visualice estadísticas de fallos, métricas de seguridad y el historial de registros aquí.",
+                    "welcome": "¡Se encuentra en el **Tablero de Auditía**! Visualice estadísticas de fallos, métricas de seguridad y el historial de registros aquí.",
                     "chips": ["💡 ¿Cómo funcionan las métricas?", "🔐 Restablecer BD", "🎯 Ir a la Academia", "📊 Comparar Modelos"]
                 },
                 "compare": {
@@ -356,7 +364,7 @@
                     "chips": ["💡 ¿Qué es un Veredicto?", "🎯 Curso 1 Sandbox", "🔐 Purgar Registros", "🔑 Token API"]
                 },
                 "academy": {
-                    "welcome": "¡Bienvenido a la **Academia de Auditoría**! Pruebe inyecciones de prompt, cumplimiento estricto de JSON y seguridad multilingüe.",
+                    "welcome": "¡Bienvenido a la **Academia de Auditía**! Pruebe inyecciones de prompt, cumplimiento estricto de JSON y seguridad multilingüe.",
                     "chips": ["🧪 Consejo del Curso 1", "🧪 Consejo del Curso 2", "🧪 Consejo del Curso 3", "🔑 Especificación API REST"]
                 },
                 "complaints": {
@@ -364,7 +372,7 @@
                     "chips": ["🔐 Restablecer BD & Informes", "📊 Ver Análisis", "🔑 Acceso API REST", "🎯 Iniciar Academia"]
                 },
                 "default": {
-                    "welcome": "¡Hola! Soy tu asistente de IA Auditor. ¡Hazme preguntas sobre laboratorios, inyecciones de prompt, formato JSON o soporte técnico!",
+                    "welcome": "¡Hola! Soy tu asistente de IA Audit. ¡Hazme preguntas sobre laboratorios, inyecciones de prompt, formato JSON o soporte técnico!",
                     "chips": ["🎯 Curso 1 Lab", "📊 Curso 2 JSON", "🌍 Curso 3 Multilingüe", "🔑 Clave API REST"]
                 }
             }
@@ -758,7 +766,7 @@
             "nav_active": "Active",
             "nav_admin": "Admin",
             "nav_tester": "Tester",
-            "audit_title": "AI Auditor v0.1",
+            "audit_title": "AI Audit v0.1",
             "audit_model_name_lbl": "Model Name",
             "audit_transcript_lbl": "Transcript",
             "audit_run_btn": "Run Audit",
@@ -794,7 +802,7 @@
             "admin_req_action": "Action",
             "admin_req_notify_btn": "Mark Trained & Send Email Notification",
             "admin_req_empty": "No pending training requests.",
-            "dash_title": "AI Auditor Dashboard",
+            "dash_title": "AI Audit Dashboard",
             "dash_subtitle_desc": "Real-time model failure rates, benchmarks, and performance analysis.",
             "dash_fail_analytics": "Failure Analytics",
             "dash_lang_fail": "Language Fail Rate",
@@ -920,7 +928,7 @@
             "nav_active": "Aktiv",
             "nav_admin": "Admin",
             "nav_tester": "Tester",
-            "audit_title": "KI-Auditor v0.1",
+            "audit_title": "KI-Audit v0.1",
             "audit_model_name_lbl": "Modellname",
             "audit_transcript_lbl": "Transkript",
             "audit_run_btn": "Audit starten",
@@ -956,7 +964,7 @@
             "admin_req_action": "Aktion",
             "admin_req_notify_btn": "Als geschult markieren & E-Mail senden",
             "admin_req_empty": "Keine ausstehenden Schulungsanfragen.",
-            "dash_title": "AI Auditor Dashboard",
+            "dash_title": "AI Audit Dashboard",
             "dash_subtitle_desc": "Echtzeit-Modellfehlerraten, Benchmarks und Leistungsanalysen.",
             "dash_fail_analytics": "Fehleranalyse",
             "dash_lang_fail": "Sprach-Fehlerrate",
@@ -1082,7 +1090,7 @@
             "nav_active": "Actif",
             "nav_admin": "Admin",
             "nav_tester": "Testeur",
-            "audit_title": "IA Auditor v0.1",
+            "audit_title": "IA Audit v0.1",
             "audit_model_name_lbl": "Nom du modèle",
             "audit_transcript_lbl": "Transcription",
             "audit_run_btn": "Lancer l'audit",
@@ -1118,7 +1126,7 @@
             "admin_req_action": "Action",
             "admin_req_notify_btn": "Marquer comme formé & Envoyer l'e-mail",
             "admin_req_empty": "Aucune demande de formation en attente.",
-            "dash_title": "Tableau de bord IA Auditor",
+            "dash_title": "Tableau de bord IA Audit",
             "dash_subtitle_desc": "Taux d'échec des modèles en temps réel, bancs d'essai et analyses de performance.",
             "dash_fail_analytics": "Analyses d'échecs",
             "dash_lang_fail": "Taux d'échec linguistique",
@@ -1244,7 +1252,7 @@
             "nav_active": "Activo",
             "nav_admin": "Admin",
             "nav_tester": "Tester",
-            "audit_title": "Auditor de IA v0.1",
+            "audit_title": "Audit de IA v0.1",
             "audit_model_name_lbl": "Nombre del modelo",
             "audit_transcript_lbl": "Transcripción",
             "audit_run_btn": "Ejecutar auditoría",
@@ -1280,7 +1288,7 @@
             "admin_req_action": "Acción",
             "admin_req_notify_btn": "Marcar como entrenado y enviar correo",
             "admin_req_empty": "No hay solicitudes de entrenamiento pendientes.",
-            "dash_title": "Panel de IA Auditor",
+            "dash_title": "Panel de IA Audit",
             "dash_subtitle_desc": "Tasas de fallos de modelos en tiempo real, puntos de referencia y análisis de rendimiento.",
             "dash_fail_analytics": "Análisis de fallos",
             "dash_lang_fail": "Tasa de fallos de idioma",
@@ -1439,6 +1447,39 @@
         translateUI(savedLang);
     });
 </script>
+<!-- =========================
+     8. FOOTER
+========================= -->
+<footer class="footer">
+    <div class="footer-container">
+        <!-- COLUMN 1 -->
+        <div class="footer-column">
+            <h2 class="footer-logo">Audit</h2>
+            <p>Discover movies, trailers, reviews, and cinema experiences.</p>
+        </div>
+
+        <!-- COLUMN 2 -->
+        <div class="footer-column">
+            <h3>Side-links</h3>
+            <ul>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('contact') }}">Contact</a></li>
+                <li><a href="{{ url_for('school_project') }}">School-Project</a></li>
+            </ul>
+        </div>
+
+
+
+        <!-- COLUMN 3 -->
+        <div class="footer-column">
+            <h3>Information</h3>
+            <p>Year: <span id="footerYear">© 2026 Audit AI</span></p>
+            <p>Today's Date: <span id="footerDate"></span></p>
+        </div>
+       <div><a href="{{ url_for('impressum') }}" style="text-decoration: none;">Impressum</a></div>  <div><a href="{{ url_for('datenschutz') }}" style="text-decoration: none;">Datenschutz</a></div>
+    </div>
+</footer>
+
 </body>
 </html>
 

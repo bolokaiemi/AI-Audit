@@ -1,0 +1,83 @@
+/* impressdaten.css - 3 col Desktop, 2 col Tablet, 1 col Mobile */
+
+* {
+  box-sizing: border-box;
+}
+
+
+.legal-page {
+  background: #0a0a0a;
+  color: #f2f2f2;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  line-height: 1.7;
+  padding: 40px 20px; /* safe padding so text doesn't touch edges */
+  min-height: 100vh;
+}
+
+.legal-content {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  /* Mobile first: 1 column */
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+
+/* Headings span all columns */
+.legal-content h1 {
+  grid-column: 1 / -1;
+  color: #ff3b3b; /* CinemaBot red */
+  font-size: 2rem;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #ff3b3b;
+  padding-bottom: 10px;
+  font-weight: 700;
+}
+
+.legal-content h2 {
+  color: #4da6ff; /* blue accent */
+  font-size: 1.25rem;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.legal-content p {
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+}
+
+.legal-content strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Touch-friendly links for mobile */
+.legal-content a {
+  color: #4da6ff;
+  text-decoration: none;
+  word-break: break-all;
+  padding: 4px 0; /* bigger tap area */
+  display: inline-block;
+}
+
+.legal-content a:hover {
+  text-decoration: underline;
+  color: #82c4ff;
+}
+
+/* Tablet: 2 columns */
+@media (min-width: 768px) {
+  .legal-content {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 35px;
+  }
+}
+
+/* Desktop: 3 columns footer-like */
+@media (min-width: 1024px) {
+  .legal-content {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+  }
+}

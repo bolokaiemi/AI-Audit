@@ -825,4 +825,150 @@ body {
     font-size: 1.25rem;
     color: #1e293b;
     margin-right: 16px;
-}
+}
+
+
+
+
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+
+    margin-top: 60px;
+
+    padding: 50px 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #111827,
+            #1f2937
+        );
+
+    color: white;
+}
+
+/* =========================
+   CONTAINER
+========================= */
+
+.footer-container {
+
+    width: 100%;
+
+    max-width: 1300px;
+
+    margin: auto;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(220px, 1fr));
+
+    gap: 40px;
+}
+
+/* =========================
+   COLUMN
+========================= */
+
+.footer-column {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+}
+
+/* =========================
+   LOGO
+========================= */
+
+.footer-logo {
+
+    font-size: 28px;
+
+    font-weight: 700;
+
+    color: #ff7e5f;
+}
+
+/* =========================
+   HEADINGS
+========================= */
+
+.footer-column h3 {
+
+    font-size: 18px;
+
+    margin-bottom: 10px;
+}
+
+/* =========================
+   LINKS
+========================= */
+
+.footer-column ul {
+
+    list-style: none;
+
+    padding: 0;
+
+    margin: 0;
+}
+
+.footer-column li {
+
+    margin-bottom: 10px;
+}
+
+.footer-column a {
+
+    color: rgba(255,255,255,0.85);
+
+    text-decoration: none;
+
+    transition: 0.25s ease;
+}
+
+.footer-column a:hover {
+
+    color: #ff7e5f;
+}
+
+/* =========================
+   TEXT
+========================= */
+
+.footer-column p {
+
+    color: rgba(255,255,255,0.82);
+
+    line-height: 1.6;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+
+    .footer {
+
+        padding: 40px 20px;
+    }
+
+    .footer-container {
+
+        gap: 30px;
+    }
+
+
+
+
+}
