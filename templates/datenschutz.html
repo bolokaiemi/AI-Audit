@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Datenschutzerklärung{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='impressdaten.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="legal-page">
+
+    <div class="legal-content">
+
+        <h1>Datenschutzerklärung</h1>
+
+        <p>
+            <strong>1. Verantwortlicher</strong><br>
+            Ebi Emmerich-Adehor<br>
+            Viktor-Reuter 23<br>
+            44623 Herne<br>
+            Deutschland<br><br>
+
+            <strong>E-Mail:</strong><br>
+            <a href="mailto:ebivien42@gmail.com">
+                ebivien42@gmail.com
+            </a>
+        </p>
+
+        <h2>2. Datenerfassung auf dieser Website</h2>
+
+        <p>
+            CinemaBot erhebt keine personenbezogenen Daten.
+            Es gibt keine Registrierung,
+            keinen Login und keine Cookies.
+        </p>
+
+        <h2>3. Externe APIs</h2>
+
+        <p>
+            Bei der Filmsuche werden Suchanfragen an die
+            TMDB API (The Movie Database) gesendet.
+            Es gelten die Datenschutzbestimmungen von TMDB:
+        </p>
+
+        <p>
+            <a href="https://www.themoviedb.org/privacy-policy"
+               target="_blank"
+               rel="noopener noreferrer">
+                https://www.themoviedb.org/privacy-policy
+            </a>
+        </p>
+
+        <h2>4. Hosting</h2>
+
+        <p>
+            Diese Website wird bei Render.com gehostet.
+            Render kann Server-Logs mit IP-Adressen
+            temporär speichern.
+        </p>
+
+        <h2>5. Ihre Rechte</h2>
+
+        <p>
+            Sie haben das Recht auf Auskunft,
+            Berichtigung,
+            Löschung und Einschränkung
+            der Verarbeitung Ihrer Daten
+            gemäß den geltenden
+            Datenschutzbestimmungen.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Impressum{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='impressdaten.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="legal-page">
+
+    <div class="legal-content">
+
+        <h1>Impressum</h1>
+
+        <p>
+            <strong>Angaben gemäß § 5 TMG</strong><br>
+            Ebi Emmerich-Adehor<br>
+            Viktor-Reuter 23<br>
+            44623 Herne<br>
+            Deutschland
+        </p>
+
+        <p>
+            <strong>Kontakt</strong><br>
+            E-Mail:
+            <a href="mailto:ebivien42@gmail.com">
+                ebivien42@gmail.com
+            </a>
+        </p>
+
+        <h2>Haftung für Inhalte</h2>
+
+        <p>
+            Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte
+            nach den allgemeinen Gesetzen verantwortlich.
+        </p>
+
+        <p>
+            Nach §§ 8 bis 10 TMG sind wir jedoch nicht verpflichtet,
+            übermittelte oder gespeicherte fremde Informationen zu überwachen
+            oder nach Umständen zu forschen, die auf eine rechtswidrige
+            Tätigkeit hinweisen.
+        </p>
+
+        <p>
+            Verpflichtungen zur Entfernung oder Sperrung der Nutzung von
+            Informationen bleiben hiervon unberührt. Eine Haftung ist jedoch
+            erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung
+            möglich.
+        </p>
+
+        <h2>Haftung für Links</h2>
+
+        <p>
+            Unser Angebot enthält Links zu externen Webseiten Dritter.
+            Für die Inhalte der verlinkten Seiten sind ausschließlich deren
+            Betreiber verantwortlich.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}
