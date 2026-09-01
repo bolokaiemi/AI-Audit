@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <h2>Frequently Asked Questions</h2>
+
+  <!-- Existing FAQs -->
+  <details class="faq-detail">
+    <summary><h3>What is MasterAuditor AI?</h3></summary>
+    <div class="faq-content">
+      <p>MasterAuditor AI is an AI auditing platform designed to evaluate AI systems for fairness, privacy, security, transparency, robustness, and compliance. It helps identify potential risks and blind spots before an AI system is deployed.</p>
+    </div>
+  </details>
+
+  <details class="faq-detail">
+    <summary><h3>What does an AI audit evaluate?</h3></summary>
+    <div class="faq-content">
+      <p>An AI audit examines important areas such as model performance, fairness, data privacy, security, transparency, instruction adherence, robustness, and regulatory compliance. The goal is to determine whether an AI system is operating reliably and responsibly.</p>
+    </div>
+  </details>
+
+  <details class="faq-detail">
+    <summary><h3>Why is AI auditing important?</h3></summary>
+    <div class="faq-content">
+      <p>AI auditing helps organizations discover weaknesses before they become serious problems. Testing can uncover bias, privacy risks, security vulnerabilities, unreliable outputs, and other potential issues, helping organizations build safer and more trustworthy AI systems.</p>
+    </div>
+  </details>
+
+  <details class="faq-detail">
+    <summary><h3>Can MasterAuditor AI help prepare an AI system for deployment?</h3></summary>
+    <div class="faq-content">
+      <p>Yes. MasterAuditor AI can provide structured evaluations and reports that help developers understand potential risks, improve their systems, and make better‑informed deployment decisions. An audit supports trust and risk management, but it does not guarantee that an AI system is completely risk‑free or automatically compliant with every regulation.</p>
+    </div>
+  </details>
+
+  <!-- New FAQs about Run Audit vs AI Audit -->
+  <details class="faq-detail">
+    <summary><h3>Do Run Audit and AI Audit function the same way?</h3></summary>
+    <div class="faq-content">
+      <p>Run Audit triggers the actual auditing logic (POST to <code>/audit</code>), processes the data, stores results and generates a PDF. AI Audit is an informational page (<code>/howitwork</code>) that explains the audit workflow and does not run any code.</p>
+    </div>
+  </details>
+
+  <details class="faq-detail">
+    <summary><h3>How do I use the Run Audit feature?</h3></summary>
+    <div class="faq-content">
+      <ol>
+        <li>Enter the AI system/model name and a transcript in the form on the home page.</li>
+        <li>Click the “Run Audit” button.</li>
+        <li>The server evaluates the input, displays the audit scores, and provides a downloadable PDF report.</li>
+      </ol>
+    </div>
+  </details>
+
+  <details class="faq-detail">
+    <summary><h3>How do I use the AI Audit page?</h3></summary>
+    <div class="faq-content">
+      <p>Navigate to the “FAQ” link in the navigation bar to open the AI Audit page. It shows a detailed description of the audit workflow, safety dimensions and example use‑cases. No action is required; just read.</p>
+    </div>
+  </details>
+
+</div>
+{% endblock %}

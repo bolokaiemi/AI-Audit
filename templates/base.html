@@ -13,6 +13,11 @@
       href="{{ url_for('static', filename='style.css') }}">
 
 <link rel="stylesheet" href="{{ url_for('static', filename='impressdaten.css') }}">
+    <link rel="stylesheet"
+      href="{{ url_for('static', filename='faq-work.css') }}">
+      <!-- School Project stylesheet -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/school-project.css') }}">
 </head>
 
 
@@ -103,6 +108,17 @@
     </div>
 </nav>
 
+
+   <div class="how-it-works-container">
+
+
+                 <li><a href="{{ url_for('how_it_work') }}">How It Works</a></li>
+        <li><a href="{{ url_for('faq') }}">FAQ</a></li>
+
+        </div>
+
+
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
@@ -128,15 +144,18 @@
      6. EXTRA CONTENT BLOCKS
 ========================= -->
 {% block report_content %}{% endblock %}
-    {% block about_content %}{% endblock %}
+    {% block faq_content %}{% endblock %}
+{% block howit_work_content %}{% endblock %}
     {% block dashboard_content %}{% endblock %}
      {% block complaints_content %}{% endblock %}
     {% block impressum_content %}{% endblock %}
 {% block datenschutz_content %}{% endblock %}
-
+{% block about_content %}{% endblock %}
         {% block contact_content %}{% endblock %}
 {% block school_project_content %}{% endblock %}
 {% block home_content %}{% endblock %}
+
+
 </section>
 
 </section>
@@ -1465,6 +1484,7 @@
                 <li><a href="{{ url_for('about') }}">About</a></li>
                 <li><a href="{{ url_for('contact') }}">Contact</a></li>
                 <li><a href="{{ url_for('school_project') }}">School-Project</a></li>
+                 <li><a href="{{ url_for('faq') }}">FAQ</a></li>
             </ul>
         </div>
 

@@ -1,77 +1,247 @@
 {% extends "base.html" %}
 
-{% block title %}Datenschutzerklärung{% endblock %}
+{% block title %}Datenschutzerklärung | MasterAuditor AI{% endblock %}
 
 {% block head %}
-    {{ super() }}
-    <link rel="stylesheet" href="{{ url_for('static', filename='impressdaten.css') }}">
+{{ super() }} <link rel="stylesheet" href="{{ url_for('static', filename='impressdaten.css') }}">
 {% endblock %}
 
 {% block content %}
 
 <div class="legal-page">
 
-    <div class="legal-content">
+<div class="legal-content">
 
-        <h1>Datenschutzerklärung</h1>
+    <h1>Datenschutzerklärung</h1>
 
-        <p>
-            <strong>1. Verantwortlicher</strong><br>
-            Ebi Emmerich-Adehor<br>
-            Viktor-Reuter 23<br>
-            44623 Herne<br>
-            Deutschland<br><br>
+    <p>
+        <strong>1. Verantwortlicher</strong><br>
+        <!--Ebi Emmerich-Adehor<br>-->
+        44623 Herne<br>
+        Deutschland<br><br>
 
-            <strong>E-Mail:</strong><br>
-            <a href="mailto:ebivien42@gmail.com">
-                ebivien42@gmail.com
-            </a>
-        </p>
+        <strong>E-Mail:</strong><br>
+        <a href="mailto:ebivien42@gmail.com">
+            ebivien42@gmail.com
+        </a>
+    </p>
 
-        <h2>2. Datenerfassung auf dieser Website</h2>
+    <h2>2. Allgemeine Hinweise zur Datenverarbeitung</h2>
 
-        <p>
-            CinemaBot erhebt keine personenbezogenen Daten.
-            Es gibt keine Registrierung,
-            keinen Login und keine Cookies.
-        </p>
+    <p>
+        Der Schutz Ihrer persönlichen Daten ist uns wichtig.
+        MasterAuditor AI verarbeitet personenbezogene Daten nur,
+        soweit dies für den Betrieb der Website, die Bereitstellung
+        der angebotenen Funktionen, die Durchführung von KI-Audits
+        oder die Kommunikation mit Nutzern erforderlich ist.
+    </p>
 
-        <h2>3. Externe APIs</h2>
+    <p>
+        Die Verarbeitung personenbezogener Daten erfolgt im Rahmen
+        der geltenden Datenschutzgesetze, insbesondere der
+        Datenschutz-Grundverordnung (DSGVO), soweit diese auf die
+        Verarbeitung Anwendung findet.
+    </p>
 
-        <p>
-            Bei der Filmsuche werden Suchanfragen an die
-            TMDB API (The Movie Database) gesendet.
-            Es gelten die Datenschutzbestimmungen von TMDB:
-        </p>
+    <h2>3. Welche Daten können verarbeitet werden?</h2>
 
-        <p>
-            <a href="https://www.themoviedb.org/privacy-policy"
-               target="_blank"
-               rel="noopener noreferrer">
-                https://www.themoviedb.org/privacy-policy
-            </a>
-        </p>
+    <p>
+        Je nach Nutzung von MasterAuditor AI können insbesondere
+        folgende Daten verarbeitet werden:
+    </p>
 
-        <h2>4. Hosting</h2>
+    <ul>
+        <li>Name und Kontaktdaten, sofern vom Nutzer angegeben.</li>
+        <li>E-Mail-Adresse bei Registrierung oder Kontaktaufnahme.</li>
+        <li>Anmelde- und Kontodaten.</li>
+        <li>Technische Daten, die beim Zugriff auf die Website entstehen.</li>
+        <li>Informationen zu durchgeführten AI-Audits.</li>
+        <li>Vom Nutzer bereitgestellte Testdaten, Prompts oder Modellinformationen.</li>
+        <li>Audit-Ergebnisse, Testergebnisse und generierte Berichte.</li>
+    </ul>
 
-        <p>
-            Diese Website wird bei Render.com gehostet.
-            Render kann Server-Logs mit IP-Adressen
-            temporär speichern.
-        </p>
+    <h2>4. Nutzung der AI-Audit-Funktionen</h2>
 
-        <h2>5. Ihre Rechte</h2>
+    <p>
+        MasterAuditor AI kann vom Nutzer bereitgestellte Informationen
+        verarbeiten, um KI-Systeme zu testen und zu bewerten.
+        Dazu können beispielsweise Prompts, Modellantworten,
+        Testfälle, Konfigurationen und weitere für einen Audit
+        erforderliche Informationen gehören.
+    </p>
 
-        <p>
-            Sie haben das Recht auf Auskunft,
-            Berichtigung,
-            Löschung und Einschränkung
-            der Verarbeitung Ihrer Daten
-            gemäß den geltenden
-            Datenschutzbestimmungen.
-        </p>
+    <p>
+        Nutzer sollten keine personenbezogenen oder vertraulichen
+        Informationen in ein Audit eingeben, wenn diese für die
+        jeweilige Prüfung nicht erforderlich sind.
+    </p>
 
-    </div>
+    <p>
+        Die im Rahmen eines Audits verarbeiteten Daten können zur
+        Erstellung von Testergebnissen, Risikoanalysen und
+        Audit-Berichten verwendet werden.
+    </p>
+
+    <h2>5. Verarbeitung durch externe AI-Dienste</h2>
+
+    <p>
+        Für bestimmte Funktionen kann MasterAuditor AI externe
+        technische Dienste oder AI-Modelle verwenden.
+        Dabei können die für die jeweilige Funktion erforderlichen
+        Eingaben und Informationen an den entsprechenden Dienst
+        übertragen werden.
+    </p>
+
+    <p>
+        Die Verarbeitung durch externe Anbieter richtet sich nach
+        deren jeweiligen Datenschutzbestimmungen und den zwischen
+        dem Betreiber und den jeweiligen Dienstleistern geltenden
+        Vereinbarungen.
+    </p>
+
+    <p>
+        API-Schlüssel und andere vertrauliche Zugangsdaten werden
+        nicht als Bestandteil der normalen Benutzeroberfläche
+        veröffentlicht.
+    </p>
+
+    <h2>6. Audit-Berichte und Ergebnisse</h2>
+
+    <p>
+        Die Ergebnisse eines AI-Audits können gespeichert werden,
+        soweit dies für die Bereitstellung der Funktionen,
+        die Anzeige der Audit-Historie, die Erstellung von
+        Berichten oder die technische Verwaltung des Dienstes
+        erforderlich ist.
+    </p>
+
+    <p>
+        Audit-Ergebnisse können Informationen über die getesteten
+        Systeme, Testfälle, erkannte Risiken, Bewertungen und
+        Empfehlungen enthalten.
+    </p>
+
+    <h2>7. Technische Zugriffsdaten</h2>
+
+    <p>
+        Beim Aufruf dieser Website können technisch erforderliche
+        Informationen verarbeitet werden. Dazu können beispielsweise
+        IP-Adresse, Datum und Uhrzeit des Zugriffs, angeforderte
+        Seiten, Browserinformationen und technische Protokolldaten
+        gehören.
+    </p>
+
+    <p>
+        Diese Daten können erforderlich sein, um die Sicherheit,
+        Stabilität und Funktionsfähigkeit der Website zu gewährleisten
+        und technische Fehler zu erkennen.
+    </p>
+
+    <h2>8. Cookies und Sitzungen</h2>
+
+    <p>
+        MasterAuditor AI kann technisch notwendige Cookies oder
+        serverseitige Sitzungen verwenden, beispielsweise zur
+        Authentifizierung, zur Aufrechterhaltung einer Anmeldung
+        oder zur Bereitstellung sicherheitsrelevanter Funktionen.
+    </p>
+
+    <p>
+        Soweit optionale Cookies oder Analyse-Technologien eingesetzt
+        werden, werden diese entsprechend den geltenden
+        datenschutzrechtlichen Anforderungen behandelt.
+    </p>
+
+    <h2>9. Datensicherheit</h2>
+
+    <p>
+        Wir setzen angemessene technische und organisatorische
+        Maßnahmen ein, um personenbezogene Daten und vertrauliche
+        Informationen vor unbefugtem Zugriff, Verlust, Veränderung
+        oder Offenlegung zu schützen.
+    </p>
+
+    <p>
+        Dazu gehören insbesondere geeignete Zugriffskontrollen,
+        sichere Konfigurationen und der Schutz vertraulicher
+        Zugangsdaten.
+    </p>
+
+    <h2>10. Speicherdauer</h2>
+
+    <p>
+        Personenbezogene Daten werden grundsätzlich nur so lange
+        gespeichert, wie dies für den jeweiligen Zweck erforderlich
+        ist oder gesetzliche Aufbewahrungspflichten bestehen.
+    </p>
+
+    <p>
+        Die konkrete Speicherdauer kann abhängig von der Art der
+        Daten, der Nutzung des Dienstes und den gesetzlichen
+        Anforderungen unterschiedlich sein.
+    </p>
+
+    <h2>11. Weitergabe von Daten</h2>
+
+    <p>
+        Eine Weitergabe personenbezogener Daten an Dritte erfolgt
+        grundsätzlich nur, wenn dies für die Bereitstellung des
+        Dienstes erforderlich ist, eine gesetzliche Verpflichtung
+        besteht oder eine entsprechende Rechtsgrundlage vorliegt.
+    </p>
+
+    <p>
+        Technische Dienstleister können im Rahmen ihrer jeweiligen
+        Aufgaben Zugriff auf Daten erhalten, soweit dies für den
+        Betrieb von MasterAuditor AI erforderlich ist.
+    </p>
+
+    <h2>12. Ihre Rechte</h2>
+
+    <p>
+        Sie haben im Rahmen der geltenden gesetzlichen Bestimmungen
+        insbesondere das Recht auf:
+    </p>
+
+    <ul>
+        <li>Auskunft über Ihre personenbezogenen Daten,</li>
+        <li>Berichtigung unrichtiger Daten,</li>
+        <li>Löschung Ihrer Daten,</li>
+        <li>Einschränkung der Verarbeitung,</li>
+        <li>Widerspruch gegen bestimmte Verarbeitungen,</li>
+        <li>Datenübertragbarkeit, soweit die gesetzlichen Voraussetzungen erfüllt sind.</li>
+    </ul>
+
+    <p>
+        Zur Ausübung Ihrer Rechte können Sie uns über die oben
+        angegebene E-Mail-Adresse kontaktieren.
+    </p>
+
+    <h2>13. Beschwerderecht bei einer Aufsichtsbehörde</h2>
+
+    <p>
+        Wenn Sie der Ansicht sind, dass die Verarbeitung Ihrer
+        personenbezogenen Daten gegen geltendes Datenschutzrecht
+        verstößt, haben Sie das Recht, sich bei einer zuständigen
+        Datenschutzaufsichtsbehörde zu beschweren.
+    </p>
+
+    <h2>14. Änderungen dieser Datenschutzerklärung</h2>
+
+    <p>
+        Diese Datenschutzerklärung kann angepasst werden, wenn sich
+        die Funktionen von MasterAuditor AI, die eingesetzten
+        technischen Dienste oder die rechtlichen Anforderungen
+        ändern.
+    </p>
+
+    <p>
+        Wir empfehlen Nutzern daher, diese Datenschutzerklärung
+        regelmäßig auf Änderungen zu überprüfen.
+    </p>
+
+</div>
+
 
 </div>
 

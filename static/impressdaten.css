@@ -1,83 +1,420 @@
-/* impressdaten.css - 3 col Desktop, 2 col Tablet, 1 col Mobile */
+/* =========================================================
+MasterAuditor AI
+Legal Pages Stylesheet
+Used by:
 
-* {
-  box-sizing: border-box;
-}
+* impressum.html
+* datenschutz.html
+  ========================================================= */
 
+/* ---------------------------------------------------------
+
+1. Legal Page Wrapper
+   --------------------------------------------------------- */
 
 .legal-page {
-  background: #0a0a0a;
-  color: #f2f2f2;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  line-height: 1.7;
-  padding: 40px 20px; /* safe padding so text doesn't touch edges */
-  min-height: 100vh;
+width: 100%;
+min-height: calc(100vh - 80px);
+padding: 50px 20px 70px;
+box-sizing: border-box;
+
+
+display: flex;
+justify-content: center;
+align-items: flex-start;
+
+background:
+    linear-gradient(
+        135deg,
+        #f4f8ff 0%,
+        #eef6ff 45%,
+        #f8fbff 100%
+    );
+
+
 }
+
+/* ---------------------------------------------------------
+2. Main Legal Content Card
+--------------------------------------------------------- */
 
 .legal-content {
-  max-width: 1200px;
-  margin: 0 auto;
+width: 100%;
+max-width: 950px;
 
-  /* Mobile first: 1 column */
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 30px;
+
+padding: 45px 50px;
+
+background: #ffffff;
+
+border: 1px solid #e2e8f0;
+border-radius: 18px;
+
+box-shadow:
+    0 12px 35px rgba(15, 23, 42, 0.08);
+
+box-sizing: border-box;
+
+
 }
 
-/* Headings span all columns */
+/* ---------------------------------------------------------
+3. Main Heading
+--------------------------------------------------------- */
+
 .legal-content h1 {
-  grid-column: 1 / -1;
-  color: #ff3b3b; /* CinemaBot red */
-  font-size: 2rem;
-  margin-bottom: 10px;
-  border-bottom: 2px solid #ff3b3b;
-  padding-bottom: 10px;
-  font-weight: 700;
+margin: 0 0 30px;
+
+
+font-size: 2.4rem;
+line-height: 1.2;
+
+font-weight: 800;
+
+color: #0f172a;
+
+letter-spacing: -0.5px;
+
+border-bottom: 3px solid #2563eb;
+
+padding-bottom: 15px;
+
+
 }
+
+/* ---------------------------------------------------------
+4. Section Headings
+--------------------------------------------------------- */
 
 .legal-content h2 {
-  color: #4da6ff; /* blue accent */
-  font-size: 1.25rem;
-  margin-bottom: 12px;
-  font-weight: 600;
+margin: 38px 0 14px;
+
+
+font-size: 1.35rem;
+line-height: 1.4;
+
+font-weight: 700;
+
+color: #1e3a8a;
+
+position: relative;
+
+padding-left: 14px;
+
+
 }
+
+/* Small accent beside each section */
+
+.legal-content h2::before {
+content: "";
+
+
+position: absolute;
+
+left: 0;
+top: 4px;
+
+width: 4px;
+height: calc(100% - 8px);
+
+background: #2563eb;
+
+border-radius: 4px;
+
+
+}
+
+/* ---------------------------------------------------------
+5. Paragraphs
+--------------------------------------------------------- */
 
 .legal-content p {
-  margin-bottom: 16px;
-  font-size: 0.95rem;
+margin: 0 0 18px;
+
+
+font-size: 1rem;
+
+line-height: 1.8;
+
+color: #475569;
+
+text-align: left;
+
+
 }
+
+/* ---------------------------------------------------------
+6. Strong / Bold Text
+--------------------------------------------------------- */
 
 .legal-content strong {
-  color: #ffffff;
-  font-weight: 600;
+color: #0f172a;
+font-weight: 700;
 }
 
-/* Touch-friendly links for mobile */
+/* ---------------------------------------------------------
+7. Links
+--------------------------------------------------------- */
+
 .legal-content a {
-  color: #4da6ff;
-  text-decoration: none;
-  word-break: break-all;
-  padding: 4px 0; /* bigger tap area */
-  display: inline-block;
+color: #2563eb;
+
+
+font-weight: 600;
+
+text-decoration: none;
+
+transition:
+    color 0.2s ease,
+    text-decoration 0.2s ease;
+
+
 }
 
 .legal-content a:hover {
-  text-decoration: underline;
-  color: #82c4ff;
+color: #1d4ed8;
+text-decoration: underline;
 }
 
-/* Tablet: 2 columns */
-@media (min-width: 768px) {
-  .legal-content {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 35px;
-  }
+.legal-content a:focus-visible {
+outline: 3px solid rgba(37, 99, 235, 0.25);
+
+
+outline-offset: 3px;
+
+border-radius: 3px;
+
+
 }
 
-/* Desktop: 3 columns footer-like */
-@media (min-width: 1024px) {
-  .legal-content {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 40px;
-  }
+/* ---------------------------------------------------------
+8. Lists
+--------------------------------------------------------- */
+
+.legal-content ul {
+margin: 0 0 22px;
+
+
+padding-left: 25px;
+
+color: #475569;
+
+}
+
+.legal-content li {
+margin-bottom: 10px;
+
+
+padding-left: 5px;
+
+font-size: 1rem;
+
+line-height: 1.7;
+
+
+}
+
+.legal-content li::marker {
+color: #2563eb;
+}
+
+/* ---------------------------------------------------------
+9. Contact Information
+--------------------------------------------------------- */
+
+.legal-content p:first-of-type {
+background: #f8fafc;
+
+
+border-left: 4px solid #2563eb;
+
+padding: 20px 22px;
+
+border-radius: 10px;
+
+margin-bottom: 25px;
+
+
+}
+
+/* ---------------------------------------------------------
+10. Email Highlight
+--------------------------------------------------------- */
+
+.legal-content a[href^="mailto:"] {
+display: inline-block;
+
+
+margin-top: 3px;
+
+word-break: break-word;
+
+
+}
+
+/* ---------------------------------------------------------
+11. Information / Notice Sections
+--------------------------------------------------------- */
+
+.legal-content h2 + p {
+margin-top: 0;
+}
+
+/* ---------------------------------------------------------
+12. Smooth Reading Width
+--------------------------------------------------------- */
+
+.legal-content p,
+.legal-content ul {
+max-width: 850px;
+}
+
+/* ---------------------------------------------------------
+13. Selection
+--------------------------------------------------------- */
+
+.legal-content ::selection {
+background: #dbeafe;
+color: #1e3a8a;
+}
+
+/* ---------------------------------------------------------
+14. Tablet Responsive
+--------------------------------------------------------- */
+
+@media (max-width: 900px) {
+
+
+.legal-page {
+    padding: 40px 18px 60px;
+}
+
+.legal-content {
+    max-width: 100%;
+
+    padding: 38px 35px;
+
+    border-radius: 16px;
+}
+
+.legal-content h1 {
+    font-size: 2.1rem;
+}
+
+.legal-content h2 {
+    font-size: 1.25rem;
+}
+
+
+}
+
+/* ---------------------------------------------------------
+15. Mobile Responsive
+--------------------------------------------------------- */
+
+@media (max-width: 600px) {
+
+
+.legal-page {
+    min-height: calc(100vh - 60px);
+
+    padding: 25px 12px 45px;
+}
+
+.legal-content {
+    padding: 28px 20px;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 8px 25px rgba(15, 23, 42, 0.07);
+}
+
+.legal-content h1 {
+    margin-bottom: 24px;
+
+    font-size: 1.8rem;
+
+    padding-bottom: 12px;
+}
+
+.legal-content h2 {
+    margin-top: 30px;
+
+    font-size: 1.15rem;
+
+    padding-left: 12px;
+}
+
+.legal-content p {
+    font-size: 0.95rem;
+
+    line-height: 1.7;
+
+    margin-bottom: 16px;
+}
+
+.legal-content ul {
+    padding-left: 22px;
+}
+
+.legal-content li {
+    font-size: 0.95rem;
+
+    line-height: 1.65;
+
+    margin-bottom: 9px;
+}
+
+.legal-content p:first-of-type {
+    padding: 16px 17px;
+}
+
+
+}
+
+/* ---------------------------------------------------------
+16. Small Phones
+--------------------------------------------------------- */
+
+@media (max-width: 400px) {
+
+
+.legal-page {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.legal-content {
+    padding: 23px 16px;
+}
+
+.legal-content h1 {
+    font-size: 1.55rem;
+}
+
+.legal-content h2 {
+    font-size: 1.05rem;
+}
+
+.legal-content p,
+.legal-content li {
+    font-size: 0.9rem;
+}
+
+
+}
+
+/* ---------------------------------------------------------
+17. Reduced Motion Accessibility
+--------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+
+.legal-content a {
+    transition: none;
+}
+
 }

@@ -24,7 +24,10 @@ def create_tables():
         boundary_score INTEGER,
         overall_score INTEGER,
         status TEXT,
-        created_at TEXT
+        created_at TEXT,
+        transcript TEXT,
+        patch_reason TEXT,
+        patch_code TEXT
     )
     """)
 
@@ -52,6 +55,12 @@ def create_tables():
     )
     """)
 
+    # Ensure api_key column exists (migration helper)
+    # Ensure transcript column exists (migration helper)
+    try:
+        cur.execute("ALTER TABLE audits ADD COLUMN transcript TEXT")
+    except sqlite3.OperationalError:
+        pass
     # Ensure api_key column exists (migration helper)
     try:
         cur.execute("ALTER TABLE users ADD COLUMN api_key TEXT")
@@ -129,10 +138,11 @@ def save_audit(data):
         overall_score,
         status,
         created_at,
+        transcript,
         patch_reason,
         patch_code
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         data["model_name"],
         data["language_score"],
@@ -141,6 +151,7 @@ def save_audit(data):
         data["overall_score"],
         data["status"],
         datetime.now().isoformat(),
+        data.get("transcript", ""),
         data.get("patch_reason"),
         data.get("patch_code")
     ))

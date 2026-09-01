@@ -46,6 +46,10 @@
     <p><strong data-i18n="audit_lang_score">Language Score:</strong> {{ result.language_score }}</p>
     <p><strong data-i18n="audit_inst_score">Instruction Score:</strong> {{ result.instruction_score }}</p>
     <p><strong data-i18n="audit_bound_score">Boundary Score:</strong> {{ result.boundary_score }}</p>
+    <!-- Added display of model name and user prompt for clarity -->
+    <p><strong>Model Audited:</strong> {{ model_name }}</p>
+    <p><strong>User Prompt:</strong></p>
+    <pre style="background:#f5f5f5; padding:8px; border-radius:4px; white-space:pre-wrap;">{{ transcript }}</pre>
 
     <hr>
 

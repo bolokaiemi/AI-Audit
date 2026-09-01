@@ -1,0 +1,343 @@
+/* =========================================================
+MasterAuditor AI
+FAQ + HOW IT WORKS STYLES
+File: static/css/faq-work.css
+========================================================= */
+
+/* =========================================================
+GENERAL FAQ PAGE
+Used by:
+faq.html
+========================================================= */
+
+.container {
+width: 100%;
+max-width: 1000px;
+margin: 0 auto;
+padding: 40px 20px 60px;
+box-sizing: border-box;
+}
+
+/* Main FAQ heading */
+
+.container > h1 {
+margin: 0 0 35px;
+text-align: center;
+font-size: 2.4rem;
+font-weight: 700;
+line-height: 1.2;
+}
+
+/* =========================================================
+SIMPLE FAQ ITEMS
+Used by:
+
+   <div class="faq-item">
+   ========================================================= */
+
+.faq-item {
+margin-bottom: 20px;
+padding: 25px;
+border: 1px solid rgba(100, 116, 139, 0.25);
+border-radius: 14px;
+background: rgba(255, 255, 255, 0.96);
+box-shadow: 0 5px 18px rgba(15, 23, 42, 0.07);
+transition:
+transform 0.25s ease,
+box-shadow 0.25s ease,
+border-color 0.25s ease;
+}
+
+/* Hover effect */
+
+.faq-item:hover {
+transform: translateY(-3px);
+box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12);
+}
+
+/* FAQ question */
+
+.faq-item h3 {
+margin: 0 0 12px;
+font-size: 1.15rem;
+font-weight: 700;
+line-height: 1.4;
+}
+
+/* FAQ answer */
+
+.faq-item p {
+margin: 0;
+font-size: 1rem;
+line-height: 1.75;
+}
+
+/* =========================================================
+EXPANDABLE FAQ PAGE
+Used by:
+howit-work.html
+========================================================= */
+
+.how-it-works-container {
+width: 100%;
+max-width: 1000px;
+margin: 0 auto;
+padding: 40px 20px 60px;
+box-sizing: border-box;
+}
+
+/* Main heading */
+
+.how-it-works-container > h1,
+.how-it-works-container > h2 {
+margin: 0 0 35px;
+text-align: center;
+font-size: 2.4rem;
+font-weight: 700;
+line-height: 1.2;
+}
+
+/* =========================================================
+EXPANDABLE FAQ
+========================================================= */
+
+.faq-detail {
+width: 100%;
+margin-bottom: 16px;
+border: 1px solid rgba(100, 116, 139, 0.25);
+border-radius: 14px;
+overflow: hidden;
+background: rgba(255, 255, 255, 0.96);
+box-shadow: 0 5px 18px rgba(15, 23, 42, 0.07);
+transition:
+transform 0.25s ease,
+box-shadow 0.25s ease,
+border-color 0.25s ease;
+}
+
+/* Hover */
+
+.faq-detail:hover {
+transform: translateY(-2px);
+box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12);
+}
+
+/* =========================================================
+FAQ QUESTION
+========================================================= */
+
+.faq-detail summary {
+position: relative;
+display: flex;
+align-items: center;
+width: 100%;
+padding: 20px 60px 20px 24px;
+box-sizing: border-box;
+cursor: pointer;
+list-style: none;
+user-select: none;
+}
+
+/* Remove browser marker */
+
+.faq-detail summary::-webkit-details-marker {
+display: none;
+}
+
+.faq-detail summary::marker {
+display: none;
+}
+
+/* Question heading */
+
+.faq-detail summary h3 {
+margin: 0;
+font-size: 1.1rem;
+font-weight: 700;
+line-height: 1.45;
+}
+
+/* =========================================================
+CUSTOM PLUS / MINUS ICON
+========================================================= */
+
+.faq-detail summary::after {
+content: "+";
+position: absolute;
+right: 24px;
+top: 50%;
+transform: translateY(-50%);
+font-size: 1.7rem;
+font-weight: 400;
+line-height: 1;
+transition: transform 0.25s ease;
+}
+
+/* Change + to − when opened */
+
+.faq-detail[open] summary::after {
+content: "−";
+}
+
+/* =========================================================
+FAQ ANSWER
+========================================================= */
+
+.faq-content {
+padding: 0 24px 24px;
+border-top: 1px solid rgba(100, 116, 139, 0.18);
+}
+
+/* Answer paragraph */
+
+.faq-content p {
+margin: 18px 0 0;
+font-size: 1rem;
+line-height: 1.75;
+}
+
+/* =========================================================
+OPEN FAQ STATE
+========================================================= */
+
+.faq-detail[open] {
+border-color: rgba(37, 99, 235, 0.35);
+}
+
+/* =========================================================
+LINKS INSIDE FAQ
+========================================================= */
+
+.container a,
+.how-it-works-container a {
+text-decoration: none;
+font-weight: 600;
+}
+
+/* =========================================================
+RESPONSIVE TABLET
+========================================================= */
+
+@media (max-width: 768px) {
+
+.container,
+.how-it-works-container {
+    padding: 30px 16px 45px;
+}
+
+.container > h1,
+.how-it-works-container > h1,
+.how-it-works-container > h2 {
+    font-size: 2rem;
+    margin-bottom: 28px;
+}
+
+.faq-item {
+    padding: 21px;
+}
+
+.faq-detail summary {
+    padding: 18px 55px 18px 20px;
+}
+
+.faq-content {
+    padding: 0 20px 20px;
+}
+
+
+}
+
+/* =========================================================
+RESPONSIVE MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+
+.container,
+.how-it-works-container {
+    padding: 25px 12px 40px;
+}
+
+.container > h1,
+.how-it-works-container > h1,
+.how-it-works-container > h2 {
+    font-size: 1.65rem;
+    line-height: 1.3;
+}
+
+.faq-item {
+    padding: 18px;
+    margin-bottom: 14px;
+    border-radius: 11px;
+}
+
+.faq-item h3 {
+    font-size: 1rem;
+}
+
+.faq-item p {
+    font-size: 0.94rem;
+    line-height: 1.65;
+}
+
+.faq-detail {
+    margin-bottom: 12px;
+    border-radius: 11px;
+}
+
+.faq-detail summary {
+    padding: 16px 48px 16px 17px;
+}
+
+.faq-detail summary h3 {
+    font-size: 0.96rem;
+}
+
+.faq-detail summary::after {
+    right: 17px;
+    font-size: 1.45rem;
+}
+
+.faq-content {
+    padding: 0 17px 18px;
+}
+
+.faq-content p {
+    margin-top: 15px;
+    font-size: 0.93rem;
+    line-height: 1.65;
+}
+
+
+}
+
+/* =========================================================
+ACCESSIBILITY
+========================================================= */
+
+.faq-detail summary:focus-visible {
+outline: 3px solid rgba(37, 99, 235, 0.45);
+outline-offset: -3px;
+}
+
+/* =========================================================
+REDUCE MOTION FOR USERS WHO PREFER IT
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+
+.faq-item,
+.faq-detail,
+.faq-detail summary::after {
+    transition: none;
+}
+
+.faq-item:hover,
+.faq-detail:hover {
+    transform: none;
+}
+
+
+}

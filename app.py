@@ -351,6 +351,7 @@ def audit():
         "boundary_score": bound["score"],
         "overall_score": overall,
         "status": status,
+        "transcript": transcript,
         "patch_reason": patch_reason,
         "patch_code": patch_code
     }
@@ -688,7 +689,8 @@ def api_audit():
         "instruction_score": inst["score"],
         "boundary_score": bound["score"],
         "overall_score": overall,
-        "status": status
+        "status": status,
+        "transcript": transcript
     }
 
     save_audit(audit_data)
@@ -875,6 +877,14 @@ def school_project():
     return render_template('school-project.html')
 
 
+@app.route("/faq")
+def faq():
+    return render_template("faq.html")
+
+
+@app.route('/howitwork')
+def how_it_work():
+    return render_template('how-it-works.html')
 
 
 @app.route("/impressum")
@@ -885,6 +895,9 @@ def impressum():
 @app.route("/datenschutz")
 def datenschutz():
     return render_template("datenschutz.html")
+
+
+
 
 
 
