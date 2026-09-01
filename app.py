@@ -1,7 +1,18 @@
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, send_file, session, jsonify
 import os
+import glob
 import json
 import sqlite3
+
+import pyttsx3
+
+# Initialize fallback TTS engine
+pyttsx_fallback = pyttsx3.init()
+
+# Configure fallback voice
+pyttsx_fallback.setProperty("rate", 170)
+pyttsx_fallback.setProperty("volume", 1.0)
+
 from dotenv import load_dotenv
 # Database
 from audit_storage_db import (
@@ -53,6 +64,41 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # Initialize DB tables
 create_tables()
+
+
+def speak_text(text):
+    """Speak text using pyttsx3."""
+    if not text:
+        return
+    engine = pyttsx3.init()
+    engine.say(text)
+    engine.runAndWait()
+
+
+# --------------------------------------------------
+# Knowledge base loading
+# --------------------------------------------------
+def load_knowledge_base():
+    """Load markdown knowledge files into a dictionary.
+    Returns a dict mapping filenames (without extension) to content strings.
+    """
+    base_path = os.path.join(app.root_path, "data", "ai_auditor_knowledge")
+    knowledge = {}
+    for md_file in glob.glob(os.path.join(base_path, "*.md")):
+        key = os.path.splitext(os.path.basename(md_file))[0]
+        with open(md_file, "r", encoding="utf-8") as f:
+            knowledge[key] = f.read()
+    return knowledge
+
+KNOWLEDGE_BASE = load_knowledge_base()
+
+@app.route("/knowledge")
+def knowledge_endpoint():
+    return jsonify(KNOWLEDGE_BASE)
+
+# --------------------------------------------------
+# Global Template Context Processors (unchanged)
+# --------------------------------------------------
 
 # Provision default roles on startup if defined in environment
 ADMIN_USERNAME = os.getenv("ADMIN_USERNAME")
