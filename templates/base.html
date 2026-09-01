@@ -55,6 +55,9 @@
                 <a class="navbar-item px-4" href="/marketplace" data-i18n="nav_marketplace">
                     Marketplace
                 </a>
+                <a class="navbar-item px-4" href="{{ url_for('how_it_work') }}">How It Works</a>
+                <a class="navbar-item px-4" href="{{ url_for('faq') }}">FAQ</a>
+
                 {% if session.get('role') == 'ADMIN' %}
                 <a class="navbar-item px-4" href="/complaints" data-i18n="nav_complaints">
                     Complaints & Admin
@@ -107,17 +110,6 @@
         </div>
     </div>
 </nav>
-
-
-   <div class="how-it-works-container">
-
-
-                 <li><a href="{{ url_for('how_it_work') }}">How It Works</a></li>
-        <li><a href="{{ url_for('faq') }}">FAQ</a></li>
-
-        </div>
-
-
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -1484,7 +1476,8 @@
                 <li><a href="{{ url_for('about') }}">About</a></li>
                 <li><a href="{{ url_for('contact') }}">Contact</a></li>
                 <li><a href="{{ url_for('school_project') }}">School-Project</a></li>
-                 <li><a href="{{ url_for('faq') }}">FAQ</a></li>
+                <li><a href="{{ url_for('faq') }}">FAQ</a></li>
+                <li><a href="{{ url_for('how_it_work') }}">How It Works</a></li>
             </ul>
         </div>
 
