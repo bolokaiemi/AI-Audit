@@ -60,4 +60,4 @@ EXPOSE 8000
 #       app.py       -> Python module
 #       app           -> Flask application object
 # ------------------------------------------------------------
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "120", "app:app"]git
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "120", "app:app"]
