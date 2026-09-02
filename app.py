@@ -928,8 +928,8 @@ def faq():
     return render_template("faq.html")
 
 
-@app.route('/howitwork')
-def how_it_work():
+@app.route('/how-it-works')
+def how_it_works():
     return render_template('how-it-works.html')
 
 
