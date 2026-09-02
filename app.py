@@ -6,12 +6,11 @@ import sqlite3
 
 import pyttsx3
 
-# Initialize fallback TTS engine
-pyttsx_fallback = pyttsx3.init()
 
-# Configure fallback voice
-pyttsx_fallback.setProperty("rate", 170)
-pyttsx_fallback.setProperty("volume", 1.0)
+
+
+
+
 
 from dotenv import load_dotenv
 # Database
