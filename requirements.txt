@@ -4,4 +4,3 @@ python-dotenv~=1.2.2
 Werkzeug~=3.1.8
 gunicorn
 pyttsx3
-gunicorn
