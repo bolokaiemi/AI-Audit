@@ -20,11 +20,11 @@ ENV PYTHONUNBUFFERED=1
 # 3. Update Linux package list and install eSpeak
 #    eSpeak is required by pyttsx3 for Linux TTS
 # ------------------------------------------------------------
-#RUN apt-get update \
+RUN apt-get update \
     #&& apt-get install -y --no-install-recommends \
         #espeak \
         #espeak-ng \
-    #&& rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
 # ------------------------------------------------------------
 # 4. Set the application working directory
