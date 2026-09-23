@@ -253,35 +253,66 @@ def logout():
 # =========================
 # USER REGISTRATION & RECOVERY ROUTES
 # =========================
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    if 'user' in session:
-        return redirect(url_for('index'))
-        
+
+    # Already logged-in users do not need to register again
+    if "user" in session:
+        return redirect(url_for("index"))
+
     error = None
     success = None
-    
+
     if request.method == "POST":
+
         username = request.form.get("username", "").strip()
-        email = request.form.get("email", "").strip()
+        email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
         confirm_password = request.form.get("confirm_password", "")
-        
-        if not username or not email or not password:
+
+        # -------------------------
+        # Validate form
+        # -------------------------
+        if not username or not email or not password or not confirm_password:
             error = "Please fill in all fields."
+
         elif password != confirm_password:
             error = "Passwords do not match."
-        else:
-            # Attempt to create user
-            registered = create_user(username, password, role="USER", email=email)
-            if registered:
-                success = "Account created successfully! You can now log in."
-                return render_template("login.html", success=success)
-            else:
-                error = "Username or Email already exists."
-                
-    return render_template("register.html", error=error)
 
+        elif len(password) < 8:
+            error = "Password must contain at least 8 characters."
+
+        else:
+            # -------------------------
+            # Create new VIEWER account
+            # -------------------------
+            registered = create_user(
+                username=username,
+                password=password,
+                role="VIEWER",
+                email=email
+            )
+
+            if registered:
+                success = (
+                    "Account created successfully! "
+                    "You can now log in."
+                )
+
+                return render_template(
+                    "login.html",
+                    success=success
+                )
+
+            else:
+                error = "Username or email already exists."
+
+    return render_template(
+        "register.html",
+        error=error,
+        success=success
+    )
 
 @app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
